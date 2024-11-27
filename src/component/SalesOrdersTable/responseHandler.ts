@@ -35,13 +35,12 @@ export const handlerResponseSalesAndOrders = ({
             const existingItem = acc.find((item) => item.supplierArticle === supplierArticle);
 
             if (existingItem) {
-                (existingItem.amountSales = isSale ? existingItem.amountSales + 1 : existingItem.amountSales - 1),
-                    (existingItem.finishedPriceSalesSum += finishedPrice),
-                    (existingItem.finishedPriceSales = existingItem.finishedPriceSalesSum / existingItem.amountSales),
-                    (existingItem.forPay += forPay);
-                (existingItem.returnAmount = isSale ? existingItem.returnAmount : existingItem.returnAmount + 1),
-                    (existingItem.redemptionPercent =
-                        100 - (existingItem.returnAmount * 100) / existingItem.amountSales);
+                existingItem.amountSales = isSale ? existingItem.amountSales + 1 : existingItem.amountSales - 1;
+                existingItem.finishedPriceSalesSum += finishedPrice;
+                existingItem.finishedPriceSales = existingItem.finishedPriceSalesSum / existingItem.amountSales;
+                existingItem.forPay += forPay;
+                existingItem.returnAmount = isSale ? existingItem.returnAmount : existingItem.returnAmount + 1;
+                existingItem.redemptionPercent = 100 - (existingItem.returnAmount * 100) / existingItem.amountSales;
                 existingItem.expandedData.push(expandedData);
             } else {
                 acc.push({
