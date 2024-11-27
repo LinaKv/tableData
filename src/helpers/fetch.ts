@@ -1,5 +1,5 @@
 const dateFrom = '2019-06-20T23:59:59';
-const apiBaseUrl = process.env.REACT_APP_URL;
+const apiBaseUrl = 'https://statistics-api.wildberries.ru/api/v1/supplier';
 const token = process.env.REACT_APP_TOKEN;
 
 const headers = {
