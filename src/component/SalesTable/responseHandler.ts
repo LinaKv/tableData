@@ -1,90 +1,79 @@
-import { DataType, SalesDataSWOTType, SalesItem } from '../../types/sales';
+import { DataType, SalesAccType, SalesDataSWOTType, SalesItem } from '../../types/sales';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { DateType } from '../../types/common';
+import { DateType, FilterType } from '../../types/common';
 dayjs.extend(isBetween);
 
 export const handlerResponseSales = (responseData: SalesItem[], datePeriod: DateType) => {
     return responseData.reduce(
-        (acc, item, index) => {
+        (acc: SalesAccType, item, index) => {
             const {
-                supplierArticle,
-                discountPercent,
-                spp,
-                totalPrice,
-                forPay,
-                finishedPrice,
-                priceWithDisc,
-                saleID,
-                date,
+                retail_price_withdisc_rub,
+                retail_amount,
+                commission_percent,
+                ppvz_vw,
+                delivery_rub,
+                storage_fee,
+                sale_dt,
+                deduction,
+                sa_name,
+                supplier_oper_name,
             } = item;
 
-            const dateToCheck = dayjs(date).startOf('day');
-            const isGoodDate = dateToCheck.isBetween(datePeriod.startDate, datePeriod.endDate, null, '[]');
-            const isSale = saleID.includes('S');
+            if (supplier_oper_name !== 'Продажа') {
+                return acc;
+            }
 
-            const shouldAddItem = isGoodDate;
+            const expandedData = {
+                key: index,
+                retail_price_withdisc_rub,
+                date: sale_dt,
+                retail_amount,
+                commission_percent,
+                ppvz_vw,
+                delivery_rub,
+                storage_fee,
+                deduction,
+                sa_name,
+            };
 
-            if (isGoodDate) {
-                acc.filteredData.push({
-                    supplierArticle,
-                    discountPercent,
-                    spp,
-                    sppSum: spp,
-                    totalPrice,
-                    forPay,
-                    finishedPrice,
-                    priceWithDisc,
+            const existingItem = acc.aggregatedData.find((item) => item.sa_name === sa_name);
+
+            if (existingItem) {
+                existingItem.amountSales += 1;
+                existingItem.retail_price_withdisc_rub += retail_price_withdisc_rub;
+                existingItem.retail_amount += retail_amount;
+                existingItem.commission_percent += commission_percent;
+                existingItem.ppvz_vw += ppvz_vw;
+                existingItem.delivery_rub += delivery_rub;
+                existingItem.storage_fee += storage_fee;
+                existingItem.expandedData.push(expandedData);
+            } else {
+                acc.aggregatedData.push({
                     key: index,
-                    type: isSale ? 'Продажа' : 'Возврат',
+                    amountSales: 1,
+                    retail_price_withdisc_rub,
+                    retail_amount,
+                    commission_percent,
+                    ppvz_vw,
+                    delivery_rub,
+                    storage_fee,
+                    deduction,
+                    sa_name,
+                    expandedData: [expandedData],
                 });
+            }
 
-                const existingItem = acc.aggregatedData.find(
-                    (item) => item.supplierArticle === supplierArticle && shouldAddItem,
-                );
-
-                if (existingItem) {
-                    existingItem.amount = isSale ? existingItem.amount + 1 : existingItem.amount - 1;
-                    existingItem.discountPercentSum += discountPercent;
-                    existingItem.discountPercent = existingItem.discountPercentSum / existingItem.amount;
-                    existingItem.sppSum += spp;
-                    existingItem.spp = existingItem.sppSum / existingItem.amount;
-                    existingItem.totalPriceSum += totalPrice;
-                    existingItem.totalPrice = existingItem.totalPriceSum / existingItem.amount;
-                    existingItem.forPay += forPay;
-                    existingItem.finishedPriceSum += finishedPrice;
-                    existingItem.finishedPrice = existingItem.finishedPriceSum / existingItem.amount;
-                    existingItem.priceWithDiscSum += priceWithDisc;
-                    existingItem.priceWithDisc = existingItem.priceWithDiscSum / existingItem.amount;
-                    existingItem.returnAmount = isSale ? existingItem.returnAmount : existingItem.returnAmount + 1;
-                    existingItem.returnPercent = (existingItem.returnAmount * 100) / existingItem.amount;
-                } else {
-                    acc.aggregatedData.push({
-                        supplierArticle,
-                        returnPercent: 0,
-                        returnAmount: isSale ? 0 : 1,
-                        discountPercent,
-                        discountPercentSum: discountPercent,
-                        spp,
-                        sppSum: spp,
-                        totalPrice,
-                        totalPriceSum: totalPrice,
-                        forPay,
-                        finishedPrice,
-                        finishedPriceSum: finishedPrice,
-                        priceWithDisc,
-                        priceWithDiscSum: priceWithDisc,
-                        key: index,
-                        amount: isSale ? 1 : -1,
-                    });
-                }
+            const isArticleExist = acc.supplierArticle.find((item) => item.text === sa_name);
+            if (!isArticleExist) {
+                acc.supplierArticle.push({
+                    text: sa_name,
+                    value: sa_name,
+                });
             }
 
             return acc;
         },
-        { aggregatedData: [], filteredData: [] } as {
-            aggregatedData: SalesDataSWOTType[];
-            filteredData: DataType[];
-        },
+        { aggregatedData: [], supplierArticle: [] },
     );
 };

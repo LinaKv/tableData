@@ -9,8 +9,8 @@ const MainLayout = () => {
     return (
         <Layout style={{ minHeight: '100vh', width: '100%' }} hasSider>
             <Sidebar />
-            <Layout>
-                <Content className="contentContainer">
+            <Layout style={{ padding: '24px' }}>
+                <Content>
                     <Outlet />
                 </Content>
             </Layout>

@@ -33,3 +33,8 @@ export type ExpandedSalesAndOrdersDataType = {
     price: number;
     isCancel: boolean;
 };
+
+export type FilterType = {
+    text: string;
+    value: string;
+};

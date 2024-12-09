@@ -1,11 +1,13 @@
 import { Flex } from 'antd';
 import React from 'react';
-import SalesOrdersTable from '../component/SalesOrdersTable/SalesOrdersTable';
+import SalesTable from '../component/SalesTable/SalesTable';
+import OrdersTable from '../component/OrdersTable/OrdersTable';
 
 const Static = () => {
     return (
         <Flex gap={30} vertical>
-            <SalesOrdersTable />
+            <SalesTable />
+            <OrdersTable />
         </Flex>
     );
 };

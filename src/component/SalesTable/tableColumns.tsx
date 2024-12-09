@@ -1,110 +1,119 @@
 import { TableProps, Tag } from 'antd';
-import { DataType, SalesDataSWOTType } from '../../types/sales';
-import { toRub } from '../../helpers/helpers';
+import { DataType, SalesDataSWOTType, SalesDataType, SalesExpandedData } from '../../types/sales';
+import { getTagColor, toRub } from '../../helpers/helpers';
+import { ExpandedSalesAndOrdersDataType, FilterType } from '../../types/common';
+import dayjs from 'dayjs';
 
-export const salesColumns: TableProps<DataType>['columns'] = [
-    {
-        title: 'Артикул',
-        dataIndex: 'supplierArticle',
-        key: 'supplierArticle',
-        render: (text) => <a>{text}</a>,
-    },
-    {
-        title: 'Тип',
-        dataIndex: 'type',
-        key: 'type',
-        render: (text) => <Tag color={text.includes('П') ? 'green' : 'volcano'}>{text}</Tag>,
-    },
-    {
-        title: 'Цена без скидок',
-        dataIndex: 'totalPrice',
-        key: 'totalPrice',
-        render: (text) => <>{toRub(text)}</>,
-    },
-    {
-        title: 'Скидка продавца',
-        dataIndex: 'discountPercent',
-        key: 'discountPercent',
-        render: (text) => <>{text.toFixed(2)} %</>,
-    },
-    {
-        title: 'Скидка WB',
-        dataIndex: 'spp',
-        key: 'spp',
-        render: (text) => <>{text.toFixed(2)} %</>,
-    },
-    {
-        title: 'К перечислению продавцу',
-        dataIndex: 'forPay',
-        key: 'forPay',
-        render: (text) => <>{toRub(text)}</>,
-    },
-    {
-        title: 'Фактическая цена',
-        dataIndex: 'finishedPrice',
-        key: 'finishedPrice',
-        render: (text) => <>{toRub(text)}</>,
-    },
-    {
-        title: 'Цена со скидкой продавца',
-        dataIndex: 'priceWithDisc',
-        key: 'priceWithDisc',
-        render: (text) => <>{toRub(text)}</>,
-    },
-];
+export const getSalesColumns = (filter: FilterType[]) => {
+    const salesColumns: TableProps<SalesDataType>['columns'] = [
+        {
+            title: 'Артикул',
+            dataIndex: 'sa_name',
+            key: 'sa_name',
+            filters: filter,
+            onFilter: (value, record) => record.sa_name.indexOf(value as string) === 0,
+            render: (text) => <a>{text}</a>,
+        },
+        {
+            title: 'Кол-во',
+            dataIndex: 'amountSales',
+            key: 'amountSales',
+        },
+        {
+            title: 'Цена до СПП',
+            dataIndex: 'retail_price_withdisc_rub',
+            key: 'retail_price_withdisc_rub',
+            render: (sum, record) => <>{toRub(sum / record.amountSales)}</>,
+        },
+        {
+            title: 'Цена после СПП',
+            dataIndex: 'retail_amount',
+            key: 'retail_amount',
+            render: (sum, record) => <>{toRub(sum / record.amountSales)}</>,
+        },
+        {
+            title: 'Комиссия Вб',
+            dataIndex: 'commission_percent',
+            key: 'commission_percent',
+            render: (percent, record) => <>{(percent / record.amountSales).toFixed(2)} %</>,
+        },
+        {
+            title: 'Разница',
+            dataIndex: 'ppvz_vw',
+            key: 'ppvz_vw',
+            render: (percent, record) => <>{(percent / record.amountSales).toFixed(2)} %</>,
+        },
+        {
+            title: 'Логистика',
+            dataIndex: 'delivery_rub',
+            key: 'delivery_rub',
+            render: (sum) => <>{toRub(sum)}</>,
+        },
+        {
+            title: 'Хранение',
+            dataIndex: 'storage_fee',
+            key: 'storage_fee',
+            render: (sum) => <>{toRub(sum)}</>,
+        },
+        {
+            title: 'Реклама',
+            dataIndex: 'deduction',
+            key: 'deduction',
+            render: (sum) => <>{toRub(sum)}</>,
+        },
+    ];
 
-export const salesColumnsSWOT: TableProps<SalesDataSWOTType>['columns'] = [
+    return salesColumns;
+};
+
+export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
     {
-        title: 'Артикул',
-        dataIndex: 'supplierArticle',
-        key: 'supplierArticle',
-        render: (text) => <a>{text}</a>,
+        title: 'Дата',
+        dataIndex: 'date',
+        key: 'date',
+        render: (date) => <>{dayjs(date).format('DD MMM HH:mm')}</>,
+        width: '10%',
     },
     {
-        title: 'Кол-во продаж',
-        dataIndex: 'amount',
-        key: 'amount',
-    },
-    {
-        title: 'Возвраты',
-        dataIndex: 'returnPercent',
-        key: 'returnPercent',
-        render: (percent) => <>{percent.toFixed(2)} %</>,
-    },
-    {
-        title: 'Цена без скидок',
-        dataIndex: 'totalPrice',
-        key: 'totalPrice',
+        title: 'Цена до СПП',
+        dataIndex: 'retail_price_withdisc_rub',
+        key: 'retail_price_withdisc_rub',
         render: (sum) => <>{toRub(sum)}</>,
     },
     {
-        title: 'Скидка продавца',
-        dataIndex: 'discountPercent',
-        key: 'discountPercent',
-        render: (percent) => <>{percent.toFixed(2)} %</>,
-    },
-    {
-        title: 'Скидка WB',
-        dataIndex: 'spp',
-        key: 'spp',
-        render: (percent) => <>{percent.toFixed(2)} %</>,
-    },
-    {
-        title: 'К перечислению продавцу',
-        dataIndex: 'forPay',
-        key: 'forPay',
+        title: 'Цена после СПП',
+        dataIndex: 'retail_amount',
+        key: 'retail_amount',
         render: (sum) => <>{toRub(sum)}</>,
     },
     {
-        title: 'Фактическая цена',
-        dataIndex: 'finishedPrice',
-        key: 'finishedPrice',
+        title: 'Комиссия Вб',
+        dataIndex: 'commission_percent',
+        key: 'commission_percent',
+        render: (percent) => <>{percent.toFixed(2)} %</>,
+    },
+    {
+        title: 'Разница',
+        dataIndex: 'ppvz_vw',
+        key: 'ppvz_vw',
+        render: (amount) => <>{amount.toFixed(2)}</>,
+    },
+    {
+        title: 'Логистика',
+        dataIndex: 'delivery_rub',
+        key: 'delivery_rub',
         render: (sum) => <>{toRub(sum)}</>,
     },
     {
-        title: 'Цена со скидкой продавца',
-        dataIndex: 'priceWithDisc',
-        key: 'priceWithDisc',
+        title: 'Хранение',
+        dataIndex: 'storage_fee',
+        key: 'storage_fee',
+        render: (sum) => <>{toRub(sum)}</>,
+    },
+    {
+        title: 'Реклама',
+        dataIndex: 'deduction',
+        key: 'deduction',
         render: (sum) => <>{toRub(sum)}</>,
     },
 ];

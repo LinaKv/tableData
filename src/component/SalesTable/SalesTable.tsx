@@ -1,21 +1,27 @@
 import { useState } from 'react';
-import { DataType, SalesDataSWOTType, SalesItem } from '../../types/sales';
+import { DataType, SalesDataSWOTType, SalesDataType, SalesExpandedData, SalesItem } from '../../types/sales';
 import { handlerResponseSales } from './responseHandler';
-import { salesColumns, salesColumnsSWOT } from './tableColumns';
-import { DateType } from '../../types/common';
+import { ExpandedSalesColumns, getSalesColumns } from './tableColumns';
+import { DateType, ExpandedSalesAndOrdersDataType, FilterType } from '../../types/common';
 import TableWithSWOT from '../Tables/TableWithSWOT/TableWithSWOT';
+import { Table } from 'antd';
+import TableDataWithDatePeriod from '../Tables/TableDataWithDatePeriod/TableDataWithDatePeriod';
 
 const token = process.env.REACT_APP_TOKEN;
 
 const SalesTable = () => {
-    const [data, setData] = useState<DataType[] | undefined>(undefined);
+    const [data, setData] = useState<SalesDataType[] | undefined>(undefined);
+    const [articleFilter, setArticleFilter] = useState<FilterType[]>([]);
     const [dataSWOT, setDataSWOT] = useState<SalesDataSWOTType[] | undefined>(undefined);
 
     const onUpdateData = async (datePeriod: DateType) => {
-        const dateFrom = '2019-06-20T23:59:59';
+        const params = new URLSearchParams({
+            dateFrom: datePeriod.startDate.startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+            dateTo: datePeriod.endDate.endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+        });
 
         const response = await fetch(
-            `https://statistics-api.wildberries.ru/api/v1/supplier/sales?dateFrom=${encodeURIComponent(dateFrom)}`,
+            `https://statistics-api.wildberries.ru/api/v5/supplier/reportDetailByPeriod?${params.toString()}`,
             {
                 method: 'GET',
                 headers: {
@@ -29,21 +35,23 @@ const SalesTable = () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const responseData: SalesItem[] = await response.json();
+        const responseData = await response.json();
+        const { aggregatedData, supplierArticle } = handlerResponseSales(responseData, datePeriod);
 
-        const { aggregatedData, filteredData } = handlerResponseSales(responseData, datePeriod);
-
-        setDataSWOT(aggregatedData);
-        setData(filteredData);
+        setArticleFilter(supplierArticle);
+        setData(aggregatedData);
     };
+
+    const expandedRowRender = (record: SalesDataType) => (
+        <Table<SalesExpandedData> columns={ExpandedSalesColumns} dataSource={record.expandedData} />
+    );
 
     return (
         <>
-            <TableWithSWOT
+            <TableDataWithDatePeriod
+                columns={getSalesColumns(articleFilter)}
+                expandable={{ expandedRowRender, defaultExpandedRowKeys: ['0'] }}
                 data={data}
-                dataSWOT={dataSWOT}
-                columns={salesColumns}
-                columnsSWOT={salesColumnsSWOT}
                 title="Таблица продаж"
                 updateData={onUpdateData}
             />
