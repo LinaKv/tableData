@@ -152,6 +152,8 @@ export type SalesDataType = {
 
 export type SalesExpandedData = {
     key: React.Key;
+    id: string;
+    supplier_oper_name: string;
     retail_price_withdisc_rub: number;
     date: string;
     retail_amount: number;
