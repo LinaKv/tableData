@@ -147,6 +147,7 @@ export type SalesDataType = {
     storage_fee: number;
     deduction: number;
     sa_name: string;
+    returnAmount: number;
     expandedData: SalesExpandedData[];
 };
 

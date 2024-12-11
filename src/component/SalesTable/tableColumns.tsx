@@ -26,14 +26,14 @@ export const getSalesColumns = (filter: FilterType[]) => {
             title: 'Цена до СПП',
             dataIndex: 'retail_price_withdisc_rub',
             key: 'retail_price_withdisc_rub',
-            render: (sum, record) => <>{toRub(sum / record.amountSales)}</>,
+            render: (sum, record) => <>{toRub(sum)}</>,
             sorter: (a, b) => a.retail_price_withdisc_rub - b.retail_price_withdisc_rub,
         },
         {
             title: 'Цена после СПП',
             dataIndex: 'retail_amount',
             key: 'retail_amount',
-            render: (sum, record) => <>{toRub(sum / record.amountSales)}</>,
+            render: (sum, record) => <>{toRub(sum)}</>,
             sorter: (a, b) => a.retail_amount - b.retail_amount,
         },
         {
@@ -54,8 +54,15 @@ export const getSalesColumns = (filter: FilterType[]) => {
             title: 'Логистика',
             dataIndex: 'delivery_rub',
             key: 'delivery_rub',
-            render: (sum, record) => <>{toRub(sum / record.amountSales)}</>,
+            render: (sum, record) => <>{toRub(sum)}</>,
             sorter: (a, b) => a.delivery_rub - b.delivery_rub,
+        },
+        {
+            title: 'Возвраты',
+            dataIndex: 'returnAmount',
+            key: 'returnAmount',
+            render: (amount, record) => <>{((amount * 100) / record.amountSales).toFixed(2)} %</>,
+            sorter: (a, b) => a.returnAmount - b.returnAmount,
         },
         {
             title: 'Хранение',

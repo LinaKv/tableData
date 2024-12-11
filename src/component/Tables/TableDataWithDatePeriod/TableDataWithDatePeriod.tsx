@@ -13,6 +13,7 @@ type TableDataWithDatePeriodProps<T> = {
     title: string;
     columns: ColumnsType<T> | undefined;
     expandable?: ExpandableConfig<T> | undefined;
+    summary?: (data: readonly T[]) => React.ReactNode;
     updateData: (datePeriod: DateType) => void;
 };
 
@@ -21,6 +22,7 @@ const TableDataWithDatePeriod = <T,>({
     title,
     columns,
     updateData,
+    summary,
     expandable,
 }: TableDataWithDatePeriodProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -53,12 +55,14 @@ const TableDataWithDatePeriod = <T,>({
         <>
             {contextHolder}
             <Table<T>
+                bordered
                 columns={columns}
                 dataSource={data}
                 loading={isLoading}
                 pagination={false}
                 scroll={{ x: 'max-content' }}
                 expandable={expandable}
+                summary={summary}
                 title={() => (
                     <TableTitle
                         title={title}

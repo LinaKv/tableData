@@ -24,23 +24,11 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                 srid,
             } = item;
 
+            const isReturn = supplier_oper_name === OperationEnum.RETURN;
+            const isSale = supplier_oper_name === OperationEnum.SALE;
+
             if (exceptionStatus.includes(supplier_oper_name as OperationEnum)) {
-                console.log(item);
                 return acc;
-            }
-
-            const existExpandedData = acc.aggregatedData
-                .map((data) => data.expandedData.find((item) => item.id === srid))
-                .find((item) => item);
-
-            if (existExpandedData) {
-                existExpandedData.supplier_oper_name = supplier_oper_name;
-                existExpandedData.retail_price_withdisc_rub += retail_price_withdisc_rub;
-                existExpandedData.retail_amount += retail_amount;
-                existExpandedData.commission_percent += commission_percent;
-                existExpandedData.ppvz_vw += ppvz_vw;
-                existExpandedData.delivery_rub += delivery_rub;
-                existExpandedData.storage_fee += storage_fee;
             }
 
             const newExpandData = {
@@ -59,7 +47,6 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
             };
 
             const existingItem = acc.aggregatedData.find((item) => item.sa_name === sa_name);
-            const isSale = supplier_oper_name === 'Продажа';
 
             if (existingItem) {
                 existingItem.amountSales = isSale ? existingItem.amountSales + 1 : existingItem.amountSales;
@@ -69,14 +56,14 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                 existingItem.ppvz_vw += ppvz_vw;
                 existingItem.delivery_rub += delivery_rub;
                 existingItem.storage_fee += storage_fee;
+                existingItem.returnAmount = isReturn ? existingItem.returnAmount + 1 : existingItem.returnAmount;
 
-                if (!existExpandedData) {
-                    existingItem.expandedData.push(newExpandData);
-                }
+                existingItem.expandedData.push(newExpandData);
             } else {
                 acc.aggregatedData.push({
                     key: index,
                     amountSales: isSale ? 1 : 0,
+                    returnAmount: isReturn ? 1 : 0,
                     retail_price_withdisc_rub,
                     retail_amount,
                     commission_percent,

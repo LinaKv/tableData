@@ -6,6 +6,8 @@ import { DateType, ExpandedSalesAndOrdersDataType, FilterType } from '../../type
 import TableWithSWOT from '../Tables/TableWithSWOT/TableWithSWOT';
 import { Table } from 'antd';
 import TableDataWithDatePeriod from '../Tables/TableDataWithDatePeriod/TableDataWithDatePeriod';
+import { toRub } from '../../helpers/helpers';
+import SummarySales from './SummarySales';
 
 const token = process.env.REACT_APP_TOKEN;
 
@@ -43,7 +45,7 @@ const SalesTable = () => {
     };
 
     const expandedRowRender = (record: SalesDataType) => (
-        <Table<SalesExpandedData> columns={ExpandedSalesColumns} dataSource={record.expandedData} />
+        <Table<SalesExpandedData> bordered columns={ExpandedSalesColumns} dataSource={record.expandedData} />
     );
 
     return (
@@ -54,6 +56,7 @@ const SalesTable = () => {
                 data={data}
                 title="Таблица продаж"
                 updateData={onUpdateData}
+                summary={(pageData) => data && SummarySales({ pageData })}
             />
         </>
     );
