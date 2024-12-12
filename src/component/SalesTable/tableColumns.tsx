@@ -23,58 +23,64 @@ export const getSalesColumns = (filter: FilterType[]) => {
             sorter: (a, b) => a.amountSales - b.amountSales,
         },
         {
-            title: 'Цена до СПП',
+            title: 'Продажи (до СПП)',
             dataIndex: 'retail_price_withdisc_rub',
             key: 'retail_price_withdisc_rub',
-            render: (sum, record) => <>{toRub(sum)}</>,
+            render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
             sorter: (a, b) => a.retail_price_withdisc_rub - b.retail_price_withdisc_rub,
         },
         {
-            title: 'Цена после СПП',
+            title: 'Продажи (после СПП)',
             dataIndex: 'retail_amount',
             key: 'retail_amount',
-            render: (sum, record) => <>{toRub(sum)}</>,
+            render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
             sorter: (a, b) => a.retail_amount - b.retail_amount,
         },
         {
             title: 'Комиссия Вб',
             dataIndex: 'commission_percent',
             key: 'commission_percent',
-            render: (percent, record) => <>{(percent / record.amountSales).toFixed(2)} %</>,
+            render: (percent, record) => (
+                <>{percent && record.amountSales ? `${(percent / record.amountSales).toFixed(2)} %` : '-'}</>
+            ),
             sorter: (a, b) => a.commission_percent - b.commission_percent,
         },
         {
             title: 'Разница',
             dataIndex: 'ppvz_vw',
             key: 'ppvz_vw',
-            render: (percent, record) => <>{(percent / record.amountSales).toFixed(2)} %</>,
+            render: (percent, record) => (
+                <>{percent && record.amountSales ? `${(percent / record.amountSales).toFixed(2)} %` : '-'}</>
+            ),
             sorter: (a, b) => a.ppvz_vw - b.ppvz_vw,
         },
         {
             title: 'Логистика',
             dataIndex: 'delivery_rub',
             key: 'delivery_rub',
-            render: (sum, record) => <>{toRub(sum)}</>,
+            render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
             sorter: (a, b) => a.delivery_rub - b.delivery_rub,
         },
         {
             title: 'Возвраты',
             dataIndex: 'returnAmount',
             key: 'returnAmount',
-            render: (amount, record) => <>{((amount * 100) / record.amountSales).toFixed(2)} %</>,
+            render: (amount, record) => (
+                <>{record.amountSales ? `${((amount * 100) / record.amountSales).toFixed(2)} %` : '-'}</>
+            ),
             sorter: (a, b) => a.returnAmount - b.returnAmount,
         },
         {
             title: 'Хранение',
             dataIndex: 'storage_fee',
             key: 'storage_fee',
-            render: (sum) => <>{toRub(sum)}</>,
+            render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         },
         {
             title: 'Реклама',
             dataIndex: 'deduction',
             key: 'deduction',
-            render: (sum) => <>{toRub(sum)}</>,
+            render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         },
     ];
 
@@ -98,9 +104,11 @@ export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         key: 'supplier_oper_name',
         filters: Object.values(OperationEnum).reduce(
             (acc, el) => {
-                if (!exceptionStatus.includes(el)) {
-                    acc.push({ text: el, value: el });
-                }
+                // if (!exceptionStatus.includes(el)) {
+                //     acc.push({ text: el, value: el });
+                // }
+                acc.push({ text: el, value: el });
+
                 return acc;
             },
             [] as { text: string; value: string }[],
@@ -112,47 +120,50 @@ export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         title: 'Цена до СПП',
         dataIndex: 'retail_price_withdisc_rub',
         key: 'retail_price_withdisc_rub',
-        render: (sum) => <>{toRub(sum)}</>,
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         sorter: (a, b) => a.retail_price_withdisc_rub - b.retail_price_withdisc_rub,
     },
     {
         title: 'Цена после СПП',
         dataIndex: 'retail_amount',
         key: 'retail_amount',
-        render: (sum) => <>{toRub(sum)}</>,
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         sorter: (a, b) => a.retail_amount - b.retail_amount,
     },
     {
         title: 'Комиссия Вб',
         dataIndex: 'commission_percent',
         key: 'commission_percent',
-        render: (percent) => <>{percent.toFixed(2)} %</>,
+        render: (percent) => <>{percent ? `${percent}%` : '-'} </>,
         sorter: (a, b) => a.commission_percent - b.commission_percent,
     },
     {
         title: 'Разница',
         dataIndex: 'ppvz_vw',
         key: 'ppvz_vw',
-        render: (amount) => <>{amount.toFixed(2)}%</>,
+        render: (percent, record) => <>{percent ? `${percent.toFixed(2)} %` : '-'}</>,
+
         sorter: (a, b) => a.ppvz_vw - b.ppvz_vw,
     },
     {
         title: 'Логистика',
         dataIndex: 'delivery_rub',
         key: 'delivery_rub',
-        render: (sum) => <>{toRub(sum)}</>,
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         sorter: (a, b) => a.delivery_rub - b.delivery_rub,
     },
     {
         title: 'Хранение',
         dataIndex: 'storage_fee',
         key: 'storage_fee',
-        render: (sum) => <>{toRub(sum)}</>,
+        sorter: (a, b) => a.deduction - b.deduction,
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
     },
     {
         title: 'Реклама',
         dataIndex: 'deduction',
         key: 'deduction',
-        render: (sum) => <>{toRub(sum)}</>,
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+        sorter: (a, b) => a.deduction - b.deduction,
     },
 ];

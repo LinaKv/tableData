@@ -27,10 +27,6 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
             const isReturn = supplier_oper_name === OperationEnum.RETURN;
             const isSale = supplier_oper_name === OperationEnum.SALE;
 
-            if (exceptionStatus.includes(supplier_oper_name as OperationEnum)) {
-                return acc;
-            }
-
             const newExpandData = {
                 key: index,
                 id: srid,
@@ -56,6 +52,7 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                 existingItem.ppvz_vw += ppvz_vw;
                 existingItem.delivery_rub += delivery_rub;
                 existingItem.storage_fee += storage_fee;
+                existingItem.deduction += deduction;
                 existingItem.returnAmount = isReturn ? existingItem.returnAmount + 1 : existingItem.returnAmount;
 
                 existingItem.expandedData.push(newExpandData);
