@@ -7,7 +7,6 @@ const Static = () => {
     return (
         <Flex gap={30} vertical>
             <SalesTable />
-            <OrdersTable />
         </Flex>
     );
 };

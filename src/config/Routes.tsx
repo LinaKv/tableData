@@ -2,6 +2,8 @@ import { Navigate, createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 import Home from '../pages/Home';
 import Static from '../pages/Static';
+import Settings from '../pages/Settings';
+import Orders from '../pages/Orders';
 
 export const router = createBrowserRouter(
     [
@@ -10,7 +12,9 @@ export const router = createBrowserRouter(
             children: [
                 { path: '/', Component: () => <Navigate to="/home" replace /> },
                 { path: '/home', Component: Home },
-                { path: '/static', Component: Static },
+                { path: '/settings', Component: Settings },
+                { path: '/sales', Component: Static },
+                { path: '/orders', Component: Orders },
             ],
         },
     ],
