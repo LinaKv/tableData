@@ -15,6 +15,7 @@ export const router = createBrowserRouter(
                 { path: '/settings', Component: Settings },
                 { path: '/sales', Component: Static },
                 { path: '/orders', Component: Orders },
+                { path: '*', Component: () => <Navigate to="/home" replace /> },
             ],
         },
     ],
