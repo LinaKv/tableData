@@ -174,10 +174,4 @@ export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         sorter: (a, b) => a.deduction - b.deduction,
     },
-    {
-        title: 'Себестоимость',
-        dataIndex: 'costPrice',
-        key: 'costPrice',
-        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-    },
 ];
