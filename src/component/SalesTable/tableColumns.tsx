@@ -13,6 +13,8 @@ export const getSalesColumns = (filter: FilterType[]) => {
             key: 'sa_name',
             width: '10%',
             filters: filter,
+            filterMode: 'tree',
+            filterSearch: true,
             onFilter: (value, record) => record.sa_name.indexOf(value as string) === 0,
             render: (text) => <a>{text}</a>,
         },
@@ -81,6 +83,12 @@ export const getSalesColumns = (filter: FilterType[]) => {
             dataIndex: 'deduction',
             key: 'deduction',
             render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+        },
+        {
+            title: 'Себестоимость',
+            dataIndex: 'costPrice',
+            key: 'costPrice',
+            render: (sum, record) => <>{sum ? toRub(sum * record.amountSales) : '-'}</>,
         },
     ];
 
@@ -165,5 +173,11 @@ export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         key: 'deduction',
         render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         sorter: (a, b) => a.deduction - b.deduction,
+    },
+    {
+        title: 'Себестоимость',
+        dataIndex: 'costPrice',
+        key: 'costPrice',
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
     },
 ];

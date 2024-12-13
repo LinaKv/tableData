@@ -1,5 +1,5 @@
 import { Button, Flex, Form, Popconfirm, Table, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ColumnArticleTableTypes, DataArticleTableType } from './type';
 import EditableCell from './EditableCell';
 import { getArticleTableColumns } from './articleTableColumn';
@@ -12,6 +12,14 @@ const ArticleTable = () => {
     const [data, setData] = useState<DataArticleTableType[]>([]);
 
     const [editingKey, setEditingKey] = useState<React.Key>('');
+
+    useEffect(() => {
+        const savedData = localStorage.getItem('data');
+        if (savedData) {
+            const newData = JSON.parse(savedData);
+            setData(newData);
+        }
+    }, []);
 
     const isEditing = (record: DataArticleTableType) => record.key === editingKey;
 
@@ -49,6 +57,8 @@ const ArticleTable = () => {
                 setData(newData);
                 setEditingKey('');
             }
+
+            localStorage.setItem(`data`, JSON.stringify(newData));
         } catch (errInfo) {
             console.log('Validate Failed:', errInfo);
         }
@@ -56,12 +66,13 @@ const ArticleTable = () => {
 
     const handleDelete = (key: React.Key) => {
         const newData = data.filter((item) => item.key !== key);
+        localStorage.setItem(`data`, JSON.stringify(newData));
         setData(newData);
     };
 
     const handleAdd = () => {
         const newData: DataArticleTableType = {
-            key: count,
+            key: data.length,
             article: ``,
             commission: '',
             costPrice: ``,

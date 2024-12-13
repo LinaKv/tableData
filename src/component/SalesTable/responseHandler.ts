@@ -3,11 +3,26 @@ import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import { DateType, FilterType } from '../../types/common';
 import { OperationEnum, exceptionStatus } from '../../const/const';
+import { DataArticleTableType } from '../ArticleTable/type';
 dayjs.extend(isBetween);
 
 const getExpandedData = () => {};
 
 export const handlerResponseSales = (responseData: SalesItem[], datePeriod: DateType) => {
+    const savedData = localStorage.getItem('data');
+    const data: DataArticleTableType[] = savedData ? JSON.parse(savedData) : [];
+
+    const articleData = data.reduce(
+        (acc, cur) => {
+            const number = isNaN(Number(cur.costPrice)) ? undefined : Number(cur.costPrice);
+            if (number) {
+                acc[cur.article] = number;
+            }
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
     return responseData.reduce(
         (acc: SalesAccType, item, index) => {
             const {
@@ -41,6 +56,7 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                 storage_fee,
                 deduction,
                 sa_name,
+                costPrice: articleData[sa_name],
             };
 
             const existingItem = acc.aggregatedData.find((item) => item.sa_name === sa_name);
@@ -70,6 +86,7 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                     storage_fee,
                     deduction,
                     sa_name,
+                    costPrice: articleData[sa_name],
                     expandedData: [newExpandData],
                 });
             }

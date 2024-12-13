@@ -19,12 +19,25 @@ export const getArticleTableColumns = ({
     isEditing,
     save,
 }: getArticleTableColumnsType) => {
+    const generateFilters = () => {
+        const savedData = localStorage.getItem('data');
+        if (savedData) {
+            const newData = JSON.parse(savedData);
+            return newData.map((el: DataArticleTableType) => ({ text: el.article, value: el.article }));
+        } else {
+            return null;
+        }
+    };
     const defaultColumns: (ColumnArticleTableTypes[number] & { editable?: boolean; dataIndex: string })[] = [
         {
             title: 'Артикль',
             dataIndex: 'article',
             width: '30%',
             editable: true,
+            filters: generateFilters(),
+            filterMode: 'tree',
+            filterSearch: true,
+            onFilter: (value, record) => record.article.startsWith(value as string),
         },
         {
             title: 'Себестоиомость',
