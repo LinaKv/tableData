@@ -22,6 +22,7 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                 sa_name,
                 supplier_oper_name,
                 srid,
+                ppvz_kvw_prc,
             } = item;
 
             const isReturn = supplier_oper_name === OperationEnum.RETURN;
@@ -35,7 +36,7 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                 date: sale_dt,
                 retail_amount,
                 commission_percent,
-                ppvz_vw,
+                ppvz_vw: ppvz_kvw_prc,
                 delivery_rub,
                 storage_fee,
                 deduction,
@@ -49,7 +50,7 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                 existingItem.retail_price_withdisc_rub += retail_price_withdisc_rub;
                 existingItem.retail_amount += retail_amount;
                 existingItem.commission_percent += commission_percent;
-                existingItem.ppvz_vw += ppvz_vw;
+                existingItem.ppvz_vw += ppvz_kvw_prc;
                 existingItem.delivery_rub += delivery_rub;
                 existingItem.storage_fee += storage_fee;
                 existingItem.deduction += deduction;
@@ -64,7 +65,7 @@ export const handlerResponseSales = (responseData: SalesItem[], datePeriod: Date
                     retail_price_withdisc_rub,
                     retail_amount,
                     commission_percent,
-                    ppvz_vw,
+                    ppvz_vw: ppvz_kvw_prc,
                     delivery_rub,
                     storage_fee,
                     deduction,
