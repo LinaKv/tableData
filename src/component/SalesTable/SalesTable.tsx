@@ -13,7 +13,6 @@ import { DateType, FilterType } from '../../types/common';
 import { Table } from 'antd';
 import TableDataWithDatePeriod from '../Tables/TableDataWithDatePeriod/TableDataWithDatePeriod';
 import SummarySales from './SummarySales';
-import { res } from './response';
 import TablesWithOnePeriod from '../Tables/TablesWithOnePeriod/TablesWithOnePeriod';
 
 const token = process.env.REACT_APP_TOKEN;
