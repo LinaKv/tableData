@@ -91,8 +91,8 @@ export interface SalesItem {
     penalty: number;
     additional_payment: number;
     rebill_logistic_cost: number;
-    rebill_logistic_org: string;
-    kiz: string;
+    rebill_logistic_org?: string;
+    kiz?: string;
     storage_fee: number;
     deduction: number;
     acceptance: number;
@@ -134,6 +134,7 @@ export type SalesDataSWOTType = {
 export type SalesAccType = {
     aggregatedData: SalesDataType[];
     supplierArticle: FilterType[];
+    commonSalesData: CommonSalesDataType[];
 };
 
 export type SalesDataType = {
@@ -149,13 +150,15 @@ export type SalesDataType = {
     sa_name: string;
     returnAmount: number;
     costPrice?: number;
+    commissionRUB?: number;
+    tax?: number;
     expandedData: SalesExpandedData[];
 };
 
 export type SalesExpandedData = {
     key: React.Key;
     id: string;
-    supplier_oper_name: string;
+    supplier_oper_name: string[];
     retail_price_withdisc_rub: number;
     date: string;
     retail_amount: number;
@@ -166,4 +169,19 @@ export type SalesExpandedData = {
     deduction: number;
     sa_name: string;
     costPrice?: number;
+};
+
+export type CommonSalesDataType = {
+    key: React.Key;
+    storage: number;
+    deduction: number;
+    costPrice: number;
+    salesProfit: number;
+    netSalesProfit: number;
+    retail_price_withdisc_rub: number;
+    retail_amount: number;
+    delivery: number;
+    commissionRUB: number;
+    acceptanceAndPenalty: number;
+    tax: number;
 };

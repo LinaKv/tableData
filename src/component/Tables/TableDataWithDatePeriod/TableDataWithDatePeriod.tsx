@@ -9,6 +9,7 @@ import { ExpandableConfig } from 'antd/es/table/interface';
 const today = dayjs();
 
 type TableDataWithDatePeriodProps<T> = {
+    additionalComponent?: React.ReactNode;
     data: T[] | undefined;
     title: string;
     columns: ColumnsType<T> | undefined;
@@ -19,11 +20,12 @@ type TableDataWithDatePeriodProps<T> = {
 
 const TableDataWithDatePeriod = <T,>({
     data,
+    additionalComponent,
     title,
     columns,
+    expandable,
     updateData,
     summary,
-    expandable,
 }: TableDataWithDatePeriodProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [datePeriod, setDatePeriod] = useState<DateType>({ startDate: today.subtract(30, 'day'), endDate: today });
@@ -64,13 +66,16 @@ const TableDataWithDatePeriod = <T,>({
                 expandable={expandable}
                 summary={summary}
                 title={() => (
-                    <TableTitle
-                        title={title}
-                        startDate={datePeriod.startDate}
-                        endDate={datePeriod.endDate}
-                        onUpdate={onUpdateData}
-                        onChangeDate={onChangeDate}
-                    />
+                    <>
+                        <TableTitle
+                            title={title}
+                            startDate={datePeriod.startDate}
+                            endDate={datePeriod.endDate}
+                            onUpdate={onUpdateData}
+                            onChangeDate={onChangeDate}
+                        />
+                        {additionalComponent}
+                    </>
                 )}
             />
         </>

@@ -52,6 +52,11 @@ export const getArticleTableColumns = ({
             render: (percent) => <>{percent ? `${percent}%` : '-'} </>,
         },
         {
+            title: 'Комиссия',
+            dataIndex: 'commissionRUB',
+            render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+        },
+        {
             title: 'Налог',
             dataIndex: 'tax',
             editable: true,

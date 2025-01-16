@@ -29,3 +29,8 @@ export const getTagColor = (type: string) => {
             break;
     }
 };
+
+export const toNumber = (value: unknown): number => {
+    const parsed = Number(value);
+    return isNaN(parsed) ? 0 : parsed;
+};

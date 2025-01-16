@@ -29,9 +29,9 @@ const SummarySales = ({ pageData }: Props) => {
             retail_price_withdisc_rub_SUM += retail_price_withdisc_rub;
             retail_amount_SUM += retail_amount;
             delivery_rub_SUM += delivery_rub;
-            deduction_SUM += deduction;
-            storage_fee_SUM += storage_fee;
-            costPrice_SUM += costPrice ? costPrice * amountSales : 0;
+            // deduction_SUM += deduction;
+            // storage_fee_SUM += storage_fee;
+            costPrice_SUM += costPrice || 0;
             amountSales_SUM += amountSales;
         },
     );
@@ -47,8 +47,8 @@ const SummarySales = ({ pageData }: Props) => {
                 <Table.Summary.Cell index={6}></Table.Summary.Cell>
                 <Table.Summary.Cell index={7}>{toRub(delivery_rub_SUM)}</Table.Summary.Cell>
                 <Table.Summary.Cell index={8}></Table.Summary.Cell>
-                <Table.Summary.Cell index={9}>{toRub(storage_fee_SUM)}</Table.Summary.Cell>
-                <Table.Summary.Cell index={10}>{toRub(deduction_SUM)}</Table.Summary.Cell>
+                {/* <Table.Summary.Cell index={9}>{toRub(storage_fee_SUM)}</Table.Summary.Cell>
+                <Table.Summary.Cell index={10}>{toRub(deduction_SUM)}</Table.Summary.Cell> */}
                 <Table.Summary.Cell index={10}>{toRub(costPrice_SUM)}</Table.Summary.Cell>
             </Table.Summary.Row>
         </Table.Summary>

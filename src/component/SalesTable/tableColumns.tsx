@@ -1,9 +1,10 @@
-import { TableProps, Tag } from 'antd';
-import { DataType, SalesDataSWOTType, SalesDataType, SalesExpandedData } from '../../types/sales';
+import { Flex, TableProps, Tag, Tooltip } from 'antd';
+import { CommonSalesDataType, SalesDataType, SalesExpandedData } from '../../types/sales';
 import { getTagColor, toRub } from '../../helpers/helpers';
-import { ExpandedSalesAndOrdersDataType, FilterType } from '../../types/common';
+import { FilterType } from '../../types/common';
 import dayjs from 'dayjs';
-import { OperationEnum, exceptionStatus } from '../../const/const';
+import { OperationEnum } from '../../const/const';
+import TitleWithInfo from '../common/TitleWithInfo';
 
 export const getSalesColumns = (filter: FilterType[]) => {
     const salesColumns: TableProps<SalesDataType>['columns'] = [
@@ -72,30 +73,30 @@ export const getSalesColumns = (filter: FilterType[]) => {
             ),
             sorter: (a, b) => a.returnAmount - b.returnAmount,
         },
-        {
-            title: 'Хранение',
-            dataIndex: 'storage_fee',
-            key: 'storage_fee',
-            render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-        },
-        {
-            title: 'Реклама',
-            dataIndex: 'deduction',
-            key: 'deduction',
-            render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-        },
+        // {
+        //     title: 'Хранение',
+        //     dataIndex: 'storage_fee',
+        //     key: 'storage_fee',
+        //     render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+        // },
+        // {
+        //     title: 'Реклама',
+        //     dataIndex: 'deduction',
+        //     key: 'deduction',
+        //     render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+        // },
         {
             title: 'Себестоимость',
             dataIndex: 'costPrice',
             key: 'costPrice',
-            render: (sum, record) => <>{sum ? toRub(sum * record.amountSales) : '-'}</>,
+            render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
         },
     ];
 
     return salesColumns;
 };
 
-export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
+export const expandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
     {
         title: 'Дата',
         dataIndex: 'date',
@@ -106,23 +107,26 @@ export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         sorter: (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf(),
     },
     {
-        title: 'Тип Операции',
+        title: 'Операции',
         width: '10%',
         dataIndex: 'supplier_oper_name',
         key: 'supplier_oper_name',
-        filters: Object.values(OperationEnum).reduce(
-            (acc, el) => {
-                // if (!exceptionStatus.includes(el)) {
-                //     acc.push({ text: el, value: el });
-                // }
-                acc.push({ text: el, value: el });
+        filters: Object.values(OperationEnum).reduce((acc, el) => {
+            // if (!exceptionStatus.includes(el)) {
+            //     acc.push({ text: el, value: el });
+            // }
+            acc.push({ text: el, value: el });
 
-                return acc;
-            },
-            [] as { text: string; value: string }[],
-        ),
-        onFilter: (value, record) => record.supplier_oper_name.indexOf(value as string) === 0,
-        render: (type) => <Tag color={getTagColor(type)}>{type}</Tag>,
+            return acc;
+        }, [] as { text: string; value: string }[]),
+        onFilter: (value, record) => record.supplier_oper_name.includes(value as string),
+        render: (operations: string[]) => {
+            return operations.map((type) => (
+                <Tag key={type} color={getTagColor(type)}>
+                    {type}
+                </Tag>
+            ));
+        },
     },
     {
         title: 'Цена до СПП',
@@ -160,11 +164,47 @@ export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         sorter: (a, b) => a.delivery_rub - b.delivery_rub,
     },
+];
+
+export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
+    {
+        title: (
+            <TitleWithInfo
+                title="Себестоимость"
+                tooltipTitle="Сумма себестоимости по кол-ву продаж по всем артиклям из таблицы себестоимость"
+            />
+        ),
+        dataIndex: 'costPrice',
+        key: 'costPrice',
+        render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: (
+            <TitleWithInfo
+                title="Комиссия"
+                tooltipTitle="Сумма комиссии по кол-ву продаж по всем артиклям из таблицы себестоимость"
+            />
+        ),
+        dataIndex: 'commissionRUB',
+        key: 'commissionRUB',
+        render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: 'Продажи (до СПП)',
+        dataIndex: 'retail_price_withdisc_rub',
+        key: 'retail_price_withdisc_rub',
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: 'Продажи (после СПП)',
+        dataIndex: 'retail_amount',
+        key: 'retail_amount',
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+    },
     {
         title: 'Хранение',
-        dataIndex: 'storage_fee',
-        key: 'storage_fee',
-        sorter: (a, b) => a.deduction - b.deduction,
+        dataIndex: 'storage',
+        key: 'storage',
         render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
     },
     {
@@ -172,6 +212,44 @@ export const ExpandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         dataIndex: 'deduction',
         key: 'deduction',
         render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-        sorter: (a, b) => a.deduction - b.deduction,
+    },
+    {
+        title: 'Логистика',
+        dataIndex: 'delivery',
+        key: 'delivery',
+        render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: (
+            <TitleWithInfo
+                title="Налог"
+                tooltipTitle="Сумма налога по кол-ву продаж по всем артиклям из таблицы себестоимость"
+            />
+        ),
+        dataIndex: 'tax',
+        key: 'tax',
+        render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: (
+            <TitleWithInfo
+                title="Прибыль"
+                tooltipTitle="Прибыль = цена со скидкой продавца - себестоимость - логистика - хранение - комиссия "
+            />
+        ),
+        dataIndex: 'salesProfit',
+        key: 'salesProfit',
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: (
+            <TitleWithInfo
+                title="Чистая прибыль"
+                tooltipTitle="Чистая прибыль = цена со скидкой продавца - себестоимость - логистика - хранение - налог - косвенные траты "
+            />
+        ),
+        dataIndex: 'netSalesProfit',
+        key: 'netSalesProfit',
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
     },
 ];
