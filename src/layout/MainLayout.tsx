@@ -6,7 +6,7 @@ import { Content } from 'antd/es/layout/layout';
 import Sidebar from '../Sidebar/Sidebar';
 
 const MainLayout = () => {
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
 
     return (
         <Layout style={{ minHeight: '100vh', width: '100%' }} hasSider>
