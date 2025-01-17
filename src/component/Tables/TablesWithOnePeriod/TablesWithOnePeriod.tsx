@@ -78,7 +78,7 @@ const TablesWithOnePeriod = <T, J>({
                     dataSource={firstTableData}
                     loading={isLoading}
                     scroll={{ x: 'max-content' }}
-                    pagination={{ pageSize: 20 }}
+                    pagination={false}
                     title={() => firstTableTitle}
                     key={firstTableTitle}
                 />
