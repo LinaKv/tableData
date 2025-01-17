@@ -26,7 +26,6 @@ export const handlerResponseSales = (responseData: SalesItem[]) => {
     return responseData.reduce(
         (acc: SalesAccType, responseItem, index) => {
             const sa_name = responseItem.sa_name;
-
             const existingItem = acc.aggregatedData.find((item) => item.sa_name === sa_name);
 
             if (existingItem) {
@@ -54,8 +53,9 @@ export const handlerResponseSales = (responseData: SalesItem[]) => {
             // refactor this!
             const sumArticlesData = acc.aggregatedData.reduce(
                 (acc, cur) => {
+                    const percent = cur.commission_percent / cur.amountSales;
                     acc.costPriceSum += cur.costPrice || 0;
-                    acc.commissionRUBSum += cur.commissionRUB || 0;
+                    acc.commissionRUBSum += (cur.retail_price_withdisc_rub * percent) / 100;
                     acc.taxSum += cur.tax || 0;
 
                     return acc;
@@ -85,6 +85,17 @@ export const handlerResponseSales = (responseData: SalesItem[]) => {
 
             const netSalesProfit = commonValue - acc.commonSalesData[0].acceptanceAndPenalty - sumArticlesData.taxSum;
             acc.commonSalesData[0].netSalesProfit = netSalesProfit;
+            // console.log(
+            //     'sum',
+            //     (
+            //         x -
+            //         y -
+            //         acc.commonSalesData[0].delivery -
+            //         acc.commonSalesData[0].storage -
+            //         acc.commonSalesData[0].acceptanceAndPenalty -
+            //         acc.commonSalesData[0].costPrice
+            //     ).toFixed(2),
+            // );
 
             return acc;
         },
@@ -123,7 +134,7 @@ const updateAggregatedData = ({
     const { isReturn, isSale } = getOperationType(responseItem);
     const { costPrice, commissionRUB, tax } = getArticleData(responseItem.sa_name);
 
-    existingItem.amountSales = isSale ? existingItem.amountSales + 1 : existingItem.amountSales;
+    existingItem.amountSales = isSale ? existingItem.amountSales + responseItem.quantity : existingItem.amountSales;
     existingItem.retail_price_withdisc_rub += responseItem.retail_price_withdisc_rub;
     existingItem.retail_amount += responseItem.retail_amount;
     existingItem.commission_percent += responseItem.commission_percent;
@@ -167,7 +178,7 @@ const createNewAggregatedItem = ({ index, responseItem }: { index: number; respo
 
     return {
         key: index,
-        amountSales: isSale ? 1 : 0,
+        amountSales: isSale ? responseItem.quantity : 0,
         returnAmount: isReturn ? 1 : 0,
         retail_price_withdisc_rub: responseItem.retail_price_withdisc_rub,
         retail_amount: responseItem.retail_amount,

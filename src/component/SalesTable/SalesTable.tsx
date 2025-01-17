@@ -52,7 +52,12 @@ const SalesTable = () => {
     };
 
     const expandedRowRender = (record: SalesDataType) => (
-        <Table<SalesExpandedData> bordered columns={expandedSalesColumns} dataSource={record.expandedData} />
+        <Table<SalesExpandedData>
+            bordered
+            scroll={{ x: 1300, y: 300 }}
+            columns={expandedSalesColumns}
+            dataSource={record.expandedData}
+        />
     );
 
     return (

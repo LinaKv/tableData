@@ -46,15 +46,10 @@ export const getArticleTableColumns = ({
             render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         },
         {
-            title: 'Комиссия',
+            title: 'Комиссия для заказов',
             dataIndex: 'commission',
             editable: true,
             render: (percent) => <>{percent ? `${percent}%` : '-'} </>,
-        },
-        {
-            title: 'Комиссия',
-            dataIndex: 'commissionRUB',
-            render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
         },
         {
             title: 'Налог',

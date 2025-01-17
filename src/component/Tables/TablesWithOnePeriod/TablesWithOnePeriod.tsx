@@ -77,8 +77,8 @@ const TablesWithOnePeriod = <T, J>({
                     columns={firstTableColumns}
                     dataSource={firstTableData}
                     loading={isLoading}
-                    pagination={false}
                     scroll={{ x: 'max-content' }}
+                    pagination={{ pageSize: 20 }}
                     title={() => firstTableTitle}
                     key={firstTableTitle}
                 />
@@ -88,8 +88,8 @@ const TablesWithOnePeriod = <T, J>({
                     dataSource={secondTableData}
                     expandable={expandable}
                     loading={isLoading}
+                    scroll={{ x: 1300, y: 500 }}
                     pagination={false}
-                    scroll={{ x: 'max-content' }}
                     title={() => secondTableTitle}
                     key={secondTableTitle}
                     summary={summary}

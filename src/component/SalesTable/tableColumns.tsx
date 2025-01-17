@@ -16,11 +16,12 @@ export const getSalesColumns = (filter: FilterType[]) => {
             filters: filter,
             filterMode: 'tree',
             filterSearch: true,
+            fixed: 'left',
             onFilter: (value, record) => record.sa_name.indexOf(value as string) === 0,
             render: (text) => <a>{text}</a>,
         },
         {
-            title: 'Кол-во',
+            title: 'Кол-во, шт',
             dataIndex: 'amountSales',
             key: 'amountSales',
             sorter: (a, b) => a.amountSales - b.amountSales,
@@ -73,18 +74,6 @@ export const getSalesColumns = (filter: FilterType[]) => {
             ),
             sorter: (a, b) => a.returnAmount - b.returnAmount,
         },
-        // {
-        //     title: 'Хранение',
-        //     dataIndex: 'storage_fee',
-        //     key: 'storage_fee',
-        //     render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-        // },
-        // {
-        //     title: 'Реклама',
-        //     dataIndex: 'deduction',
-        //     key: 'deduction',
-        //     render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-        // },
         {
             title: 'Себестоимость',
             dataIndex: 'costPrice',
@@ -168,6 +157,12 @@ export const expandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
 
 export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
     {
+        title: 'Продажи (до СПП)',
+        dataIndex: 'retail_price_withdisc_rub',
+        key: 'retail_price_withdisc_rub',
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
         title: (
             <TitleWithInfo
                 title="Себестоимость"
@@ -190,27 +185,9 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
         render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
     },
     {
-        title: 'Продажи (до СПП)',
-        dataIndex: 'retail_price_withdisc_rub',
-        key: 'retail_price_withdisc_rub',
-        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-    },
-    {
-        title: 'Продажи (после СПП)',
-        dataIndex: 'retail_amount',
-        key: 'retail_amount',
-        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-    },
-    {
         title: 'Хранение',
         dataIndex: 'storage',
         key: 'storage',
-        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
-    },
-    {
-        title: 'Реклама',
-        dataIndex: 'deduction',
-        key: 'deduction',
         render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
     },
     {
@@ -218,6 +195,12 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
         dataIndex: 'delivery',
         key: 'delivery',
         render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: 'Реклама',
+        dataIndex: 'deduction',
+        key: 'deduction',
+        render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
     },
     {
         title: (
@@ -228,6 +211,12 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
         ),
         dataIndex: 'tax',
         key: 'tax',
+        render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
+        title: <TitleWithInfo title="Косвенные траты" tooltipTitle="Стоимость платной приемки и штрафы" />,
+        dataIndex: 'acceptanceAndPenalty',
+        key: 'acceptanceAndPenalty',
         render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
     },
     {

@@ -1,4 +1,4 @@
-import { Button, Flex, Form, Popconfirm, Table, Typography } from 'antd';
+import { Button, Flex, Form, InputNumber, Popconfirm, Table, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { ColumnArticleTableTypes, DataArticleTableType } from './type';
 import EditableCell from './EditableCell';
