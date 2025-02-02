@@ -27,14 +27,14 @@ export const getSalesColumns = (filter: FilterType[]) => {
             sorter: (a, b) => a.amountSales - b.amountSales,
         },
         {
-            title: 'Продажи (до СПП)',
+            title: 'Сумма (до СПП)',
             dataIndex: 'retail_price_withdisc_rub',
             key: 'retail_price_withdisc_rub',
             render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
             sorter: (a, b) => a.retail_price_withdisc_rub - b.retail_price_withdisc_rub,
         },
         {
-            title: 'Продажи (после СПП)',
+            title: 'Сумма (после СПП)',
             dataIndex: 'retail_amount',
             key: 'retail_amount',
             render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
@@ -57,6 +57,12 @@ export const getSalesColumns = (filter: FilterType[]) => {
                 <>{percent && record.amountSales ? `${(percent / record.amountSales).toFixed(2)} %` : '-'}</>
             ),
             sorter: (a, b) => a.ppvz_vw - b.ppvz_vw,
+        },
+        {
+            title: 'Налог',
+            dataIndex: 'tax',
+            key: 'tax',
+            render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
         },
         {
             title: 'Логистика',
@@ -100,14 +106,17 @@ export const expandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         width: '10%',
         dataIndex: 'supplier_oper_name',
         key: 'supplier_oper_name',
-        filters: Object.values(OperationEnum).reduce((acc, el) => {
-            // if (!exceptionStatus.includes(el)) {
-            //     acc.push({ text: el, value: el });
-            // }
-            acc.push({ text: el, value: el });
+        filters: Object.values(OperationEnum).reduce(
+            (acc, el) => {
+                // if (!exceptionStatus.includes(el)) {
+                //     acc.push({ text: el, value: el });
+                // }
+                acc.push({ text: el, value: el });
 
-            return acc;
-        }, [] as { text: string; value: string }[]),
+                return acc;
+            },
+            [] as { text: string; value: string }[],
+        ),
         onFilter: (value, record) => record.supplier_oper_name.includes(value as string),
         render: (operations: string[]) => {
             return operations.map((type) => (
@@ -147,6 +156,12 @@ export const expandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
         sorter: (a, b) => a.ppvz_vw - b.ppvz_vw,
     },
     {
+        title: 'Налог',
+        dataIndex: 'tax',
+        key: 'tax',
+        render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
+    },
+    {
         title: 'Логистика',
         dataIndex: 'delivery_rub',
         key: 'delivery_rub',
@@ -157,7 +172,7 @@ export const expandedSalesColumns: TableProps<SalesExpandedData>['columns'] = [
 
 export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
     {
-        title: 'Продажи (до СПП)',
+        title: 'Сумма (до СПП)',
         dataIndex: 'retail_price_withdisc_rub',
         key: 'retail_price_withdisc_rub',
         render: (sum) => <>{sum ? toRub(sum) : '-'}</>,
