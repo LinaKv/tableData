@@ -15,6 +15,7 @@ const SummarySales = ({ pageData }: Props) => {
     let storage_fee_SUM = 0;
     let costPrice_SUM = 0;
     let amountSales_SUM = 0;
+    let tax_SUM = 0;
 
     pageData.forEach(
         ({
@@ -25,6 +26,7 @@ const SummarySales = ({ pageData }: Props) => {
             storage_fee,
             costPrice,
             amountSales,
+            tax,
         }) => {
             retail_price_withdisc_rub_SUM += retail_price_withdisc_rub;
             retail_amount_SUM += retail_amount;
@@ -33,6 +35,7 @@ const SummarySales = ({ pageData }: Props) => {
             // storage_fee_SUM += storage_fee;
             costPrice_SUM += costPrice || 0;
             amountSales_SUM += amountSales;
+            tax_SUM += tax;
         },
     );
     return (
@@ -45,8 +48,9 @@ const SummarySales = ({ pageData }: Props) => {
                 <Table.Summary.Cell index={4}>{toRub(retail_amount_SUM)}</Table.Summary.Cell>
                 <Table.Summary.Cell index={5}></Table.Summary.Cell>
                 <Table.Summary.Cell index={6}></Table.Summary.Cell>
-                <Table.Summary.Cell index={7}>{toRub(delivery_rub_SUM)}</Table.Summary.Cell>
-                <Table.Summary.Cell index={8}></Table.Summary.Cell>
+                <Table.Summary.Cell index={7}>{toRub(tax_SUM)}</Table.Summary.Cell>
+                <Table.Summary.Cell index={8}>{toRub(delivery_rub_SUM)}</Table.Summary.Cell>
+                <Table.Summary.Cell index={9}></Table.Summary.Cell>
                 {/* <Table.Summary.Cell index={9}>{toRub(storage_fee_SUM)}</Table.Summary.Cell>
                 <Table.Summary.Cell index={10}>{toRub(deduction_SUM)}</Table.Summary.Cell> */}
                 <Table.Summary.Cell index={10}>{toRub(costPrice_SUM)}</Table.Summary.Cell>

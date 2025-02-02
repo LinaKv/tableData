@@ -16,7 +16,6 @@ export interface DataArticleTableType {
     article: string;
     costPrice: string;
     commission: string;
-    tax: string;
 }
 
 export type ColumnArticleTableTypes = Exclude<TableProps<DataArticleTableType>['columns'], undefined>;

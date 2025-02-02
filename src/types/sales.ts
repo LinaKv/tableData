@@ -151,7 +151,7 @@ export type SalesDataType = {
     returnAmount: number;
     costPrice?: number;
     commissionRUB?: number;
-    tax?: number;
+    tax: number;
     expandedData: SalesExpandedData[];
 };
 
@@ -169,6 +169,7 @@ export type SalesExpandedData = {
     deduction: number;
     sa_name: string;
     costPrice?: number;
+    tax: number;
 };
 
 export type CommonSalesDataType = {

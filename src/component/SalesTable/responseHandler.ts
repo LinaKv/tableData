@@ -56,7 +56,7 @@ export const handlerResponseSales = (responseData: SalesItem[]) => {
                     const percent = cur.commission_percent / cur.amountSales;
                     acc.costPriceSum += cur.costPrice || 0;
                     acc.commissionRUBSum += (cur.retail_price_withdisc_rub * percent) / 100;
-                    acc.taxSum += cur.tax || 0;
+                    acc.taxSum += cur.tax;
 
                     return acc;
                 },
@@ -132,7 +132,8 @@ const updateAggregatedData = ({
     responseItem: SalesItem;
 }) => {
     const { isReturn, isSale } = getOperationType(responseItem);
-    const { costPrice, commissionRUB, tax } = getArticleData(responseItem.sa_name);
+    const { costPrice, commissionRUB } = getArticleData(responseItem.sa_name);
+    const { tax } = getTaxData();
 
     existingItem.amountSales = isSale ? existingItem.amountSales + responseItem.quantity : existingItem.amountSales;
     existingItem.retail_price_withdisc_rub += responseItem.retail_price_withdisc_rub;
@@ -145,7 +146,7 @@ const updateAggregatedData = ({
     existingItem.returnAmount = isReturn ? existingItem.returnAmount + 1 : existingItem.returnAmount;
     existingItem.costPrice = costPrice * existingItem.amountSales;
     existingItem.commissionRUB = commissionRUB * existingItem.amountSales;
-    existingItem.tax = tax * existingItem.amountSales;
+    existingItem.tax += (responseItem.retail_price_withdisc_rub * tax) / 100;
 };
 
 const updateExpandedData = ({
@@ -167,6 +168,7 @@ const updateExpandedData = ({
         itemWithOperationBefore.commission_percent = expandedData.commission_percent;
         itemWithOperationBefore.ppvz_vw = expandedData.ppvz_vw;
         itemWithOperationBefore.delivery_rub += expandedData.delivery_rub;
+        itemWithOperationBefore.tax += expandedData.tax;
     } else {
         existingItem.expandedData.push(expandedData);
     }
@@ -202,7 +204,8 @@ const getOperationType = (responseItem: SalesItem) => {
 };
 
 const createExpandedItem = ({ responseItem, index }: { responseItem: SalesItem; index: number }) => {
-    const { costPrice, commissionRUB, tax } = getArticleData(responseItem.sa_name);
+    const { costPrice, commissionRUB } = getArticleData(responseItem.sa_name);
+    const { tax } = getTaxData();
 
     return {
         key: index,
@@ -219,13 +222,13 @@ const createExpandedItem = ({ responseItem, index }: { responseItem: SalesItem; 
         sa_name: responseItem.sa_name,
         costPrice,
         commissionRUB,
-        tax,
+        tax: (responseItem.retail_price_withdisc_rub * tax) / 100,
     };
 };
 
 const getArticleData = (articleToGet: string) => {
     const savedData = localStorage.getItem('data');
-    const initialDataToReturn = { costPrice: 0, commission: 0, tax: 0, commissionRUB: 0 };
+    const initialDataToReturn = { costPrice: 0, commission: 0, commissionRUB: 0 };
 
     if (!savedData) return initialDataToReturn;
 
@@ -245,6 +248,19 @@ const getArticleData = (articleToGet: string) => {
         costPrice: toNumber(article.costPrice),
         commission: toNumber(article.commission),
         commissionRUB: (Number(article.commission) * Number(article.costPrice)) / 100,
-        tax: toNumber(article.tax),
     };
+};
+
+const getTaxData = () => {
+    const taxLocalData = localStorage.getItem('taxData');
+    const initialTaxData = { tax: 0 };
+    if (!taxLocalData) return initialTaxData;
+
+    try {
+        const actualData = JSON.parse(taxLocalData) as number;
+        return { tax: actualData };
+    } catch (error) {
+        console.warn('Invalid JSON data in localStorage.', error);
+        return initialTaxData;
+    }
 };

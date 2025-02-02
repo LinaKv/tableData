@@ -1,23 +1,33 @@
-import { Button, Flex, Form, InputNumber, Popconfirm, Table, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Button, Card, Flex, Form, InputNumber, Popconfirm, Table, Typography } from 'antd';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { ColumnArticleTableTypes, DataArticleTableType } from './type';
 import EditableCell from './EditableCell';
 import { getArticleTableColumns } from './articleTableColumn';
 import ArticleTableTitle from './ArticleTableTitle';
+import Title from 'antd/es/typography/Title';
 
 const ArticleTable = () => {
     const [form] = Form.useForm();
+    const [commonDataForm] = Form.useForm();
 
     const [count, setCount] = useState(0);
     const [data, setData] = useState<DataArticleTableType[]>([]);
+    const [taxPercent, setTaxPercent] = useState(0);
 
     const [editingKey, setEditingKey] = useState<React.Key>('');
 
     useEffect(() => {
         const savedData = localStorage.getItem('data');
+        const taxData = localStorage.getItem('taxData');
         if (savedData) {
             const newData = JSON.parse(savedData);
             setData(newData);
+        }
+
+        if (taxData) {
+            const newTaxData = JSON.parse(taxData);
+            setTaxPercent(newTaxData);
+            commonDataForm.setFieldsValue({ tax: newTaxData });
         }
     }, []);
 
@@ -29,7 +39,6 @@ const ArticleTable = () => {
             article: record.article,
             costPrice: record.costPrice,
             commission: record.commission,
-            tax: record.tax,
         });
         setEditingKey(record.key);
     };
@@ -76,7 +85,6 @@ const ArticleTable = () => {
             article: ``,
             commission: '',
             costPrice: ``,
-            tax: '',
         };
         setData([...data, newData]);
         setCount(count + 1);
@@ -106,17 +114,47 @@ const ArticleTable = () => {
         };
     });
 
+    const onSubmitData = () => {
+        const taxPercent = commonDataForm.getFieldValue('tax');
+        localStorage.setItem(`taxData`, JSON.stringify(taxPercent));
+    };
+
     return (
-        <Form form={form} component={false}>
-            <Table<DataArticleTableType>
-                components={components}
-                rowClassName={'editable-row'}
-                bordered
-                dataSource={data}
-                columns={mergedColumns}
-                title={() => <ArticleTableTitle handleAdd={handleAdd} />}
-            />
-        </Form>
+        <div className="">
+            <Title level={3}>Общие данные артиклей</Title>
+
+            <Card bordered={false}>
+                <Form form={commonDataForm} layout="vertical" onFinish={onSubmitData} initialValues={{ tax: 0 }}>
+                    <Flex justify="space-between" align="flex-end">
+                        <Form.Item label="Процент налога" name="tax" style={{ marginBottom: '0px' }}>
+                            <InputNumber<number>
+                                min={0}
+                                max={100}
+                                formatter={(value) => `${value}%`}
+                                parser={(value) => value?.replace('%', '') as unknown as number}
+                            />
+                        </Form.Item>
+                        <Form.Item label={null} style={{ marginBottom: '0px' }}>
+                            <Button type="primary" htmlType="submit">
+                                Сохранить
+                            </Button>
+                        </Form.Item>
+                    </Flex>
+                </Form>
+            </Card>
+
+            <Title level={3}>Уникальные данные артиклей</Title>
+            <Form form={form} component={false} layout="horizontal">
+                <Table<DataArticleTableType>
+                    components={components}
+                    rowClassName={'editable-row'}
+                    bordered
+                    dataSource={data}
+                    columns={mergedColumns}
+                    title={() => <ArticleTableTitle handleAdd={handleAdd} />}
+                />
+            </Form>
+        </div>
     );
 };
 
