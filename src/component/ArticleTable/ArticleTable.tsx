@@ -1,15 +1,17 @@
-import { Button, Flex, Form, InputNumber, Popconfirm, Table, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Button, Card, Flex, Form, InputNumber, Popconfirm, Table, Typography } from 'antd';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { ColumnArticleTableTypes, DataArticleTableType } from './type';
 import EditableCell from './EditableCell';
 import { getArticleTableColumns } from './articleTableColumn';
 import ArticleTableTitle from './ArticleTableTitle';
+import Title from 'antd/es/typography/Title';
 
 const ArticleTable = () => {
     const [form] = Form.useForm();
 
     const [count, setCount] = useState(0);
     const [data, setData] = useState<DataArticleTableType[]>([]);
+    const [taxPercent, setTaxPercent] = useState(0);
 
     const [editingKey, setEditingKey] = useState<React.Key>('');
 
@@ -106,17 +108,50 @@ const ArticleTable = () => {
         };
     });
 
+    const onChangePercent = (value: number | null) => {
+        console.log(value ? value : 0);
+        setTaxPercent(value ? value : 0);
+    };
+
     return (
-        <Form form={form} component={false}>
-            <Table<DataArticleTableType>
-                components={components}
-                rowClassName={'editable-row'}
-                bordered
-                dataSource={data}
-                columns={mergedColumns}
-                title={() => <ArticleTableTitle handleAdd={handleAdd} />}
-            />
-        </Form>
+        <div className="">
+            <Title level={3}>Общие данные артиклей</Title>
+
+            <Card bordered={false}>
+                <Form layout="vertical">
+                    <Flex justify="space-between" align="flex-end">
+                        <Form.Item label="Процент налога" name="Процент налога" style={{ marginBottom: '0px' }}>
+                            <InputNumber<number>
+                                defaultValue={0}
+                                value={taxPercent}
+                                min={0}
+                                max={100}
+                                formatter={(value) => `${value}%`}
+                                parser={(value) => value?.replace('%', '') as unknown as number}
+                                onChange={onChangePercent}
+                            />
+                        </Form.Item>
+                        <Form.Item label={null} style={{ marginBottom: '0px' }}>
+                            <Button type="primary" htmlType="submit">
+                                Сохранить
+                            </Button>
+                        </Form.Item>
+                    </Flex>
+                </Form>
+            </Card>
+
+            <Title level={3}>Уникальные данные артиклей</Title>
+            <Form form={form} component={false} layout="horizontal">
+                <Table<DataArticleTableType>
+                    components={components}
+                    rowClassName={'editable-row'}
+                    bordered
+                    dataSource={data}
+                    columns={mergedColumns}
+                    title={() => <ArticleTableTitle handleAdd={handleAdd} />}
+                />
+            </Form>
+        </div>
     );
 };
 
