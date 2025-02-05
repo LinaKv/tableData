@@ -12,7 +12,6 @@ export const getSalesColumns = (filter: FilterType[]) => {
             title: 'Артикул',
             dataIndex: 'sa_name',
             key: 'sa_name',
-            width: '10%',
             filters: filter,
             filterMode: 'tree',
             filterSearch: true,
@@ -61,6 +60,7 @@ export const getSalesColumns = (filter: FilterType[]) => {
         {
             title: 'Налог',
             dataIndex: 'tax',
+
             key: 'tax',
             render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
         },
@@ -81,7 +81,8 @@ export const getSalesColumns = (filter: FilterType[]) => {
             sorter: (a, b) => a.returnAmount - b.returnAmount,
         },
         {
-            title: 'Себестоимость',
+            title: 'Себест-ть',
+            minWidth: 500,
             dataIndex: 'costPrice',
             key: 'costPrice',
             render: (sum, record) => <>{sum ? toRub(sum) : '-'}</>,
@@ -180,8 +181,8 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
     {
         title: (
             <TitleWithInfo
-                title="Себестоимость"
-                tooltipTitle="Сумма себестоимости по кол-ву продаж по всем артиклям из таблицы себестоимость"
+                title="Себест-ть"
+                tooltipTitle="Сумма себестоимости по кол-ву продаж по всем артиклям из таблицы Себест"
             />
         ),
         dataIndex: 'costPrice',
@@ -192,7 +193,7 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
         title: (
             <TitleWithInfo
                 title="Комиссия"
-                tooltipTitle="Сумма комиссии по кол-ву продаж по всем артиклям из таблицы себестоимость"
+                tooltipTitle="Сумма комиссии по кол-ву продаж по всем артиклям из таблицы Себест"
             />
         ),
         dataIndex: 'commissionRUB',
@@ -221,7 +222,7 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
         title: (
             <TitleWithInfo
                 title="Налог"
-                tooltipTitle="Сумма налога по кол-ву продаж по всем артиклям из таблицы себестоимость"
+                tooltipTitle="Сумма налога по кол-ву продаж по всем артиклям из таблицы Себест"
             />
         ),
         dataIndex: 'tax',
@@ -238,7 +239,7 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
         title: (
             <TitleWithInfo
                 title="Прибыль"
-                tooltipTitle="Прибыль = цена со скидкой продавца - себестоимость - логистика - хранение - комиссия "
+                tooltipTitle="Прибыль = цена со скидкой продавца - Себест - логистика - хранение - комиссия "
             />
         ),
         dataIndex: 'salesProfit',
@@ -249,7 +250,7 @@ export const commonSalesColumns: TableProps<CommonSalesDataType>['columns'] = [
         title: (
             <TitleWithInfo
                 title="Чистая прибыль"
-                tooltipTitle="Чистая прибыль = цена со скидкой продавца - себестоимость - логистика - хранение - налог - косвенные траты "
+                tooltipTitle="Чистая прибыль = цена со скидкой продавца - Себест - логистика - хранение - налог - косвенные траты "
             />
         ),
         dataIndex: 'netSalesProfit',
