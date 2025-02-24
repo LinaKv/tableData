@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomeOutlined, ShoppingCartOutlined, ShopOutlined, EditOutlined } from '@ant-design/icons';
+import { HomeOutlined, ShoppingCartOutlined, ShopOutlined, EditOutlined, HeatMapOutlined } from '@ant-design/icons';
 import { NavItem } from '../types/common';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ const NAVIGATION: NavItem[] = [
         path: '/home',
     },
     {
-        title: 'Себестоимость',
+        title: 'Данные Артиклей',
         icon: <EditOutlined />,
         path: '/settings',
     },
@@ -18,6 +18,11 @@ const NAVIGATION: NavItem[] = [
         title: 'Таблица продаж',
         icon: <ShoppingCartOutlined />,
         path: '/sales',
+    },
+    {
+        title: 'Сравнение продаж',
+        icon: <HeatMapOutlined />,
+        path: '/compareSales',
     },
     {
         title: 'Таблица заказов',
