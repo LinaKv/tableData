@@ -85,17 +85,6 @@ export const handlerResponseSales = (responseData: SalesItem[]) => {
 
             const netSalesProfit = commonValue - acc.commonSalesData[0].acceptanceAndPenalty - sumArticlesData.taxSum;
             acc.commonSalesData[0].netSalesProfit = netSalesProfit;
-            // console.log(
-            //     'sum',
-            //     (
-            //         x -
-            //         y -
-            //         acc.commonSalesData[0].delivery -
-            //         acc.commonSalesData[0].storage -
-            //         acc.commonSalesData[0].acceptanceAndPenalty -
-            //         acc.commonSalesData[0].costPrice
-            //     ).toFixed(2),
-            // );
 
             return acc;
         },

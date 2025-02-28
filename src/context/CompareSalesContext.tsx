@@ -10,6 +10,7 @@ export type CompareSalesContextType = {
     deletePeriod: (id: string) => void;
     changePeriod: (id: string, newPeriod: Dayjs[] | null[]) => void;
     changePeriodType: (id: string, newPeriod: PeriodTypeEnum) => void;
+    deleteAllPeriods: () => void;
 };
 export const CompareSalesContext = createContext<CompareSalesContextType | null>(null);
 
@@ -61,8 +62,14 @@ export const CompareSalesProvider: React.FC<CompareSalesProvideProps> = ({ child
         setPeriods((prev) => prev.filter((period) => period.id !== id));
     };
 
+    const deleteAllPeriods = () => {
+        setPeriods([]);
+    };
+
     return (
-        <CompareSalesContext.Provider value={{ periods, addNewPeriod, deletePeriod, changePeriodType, changePeriod }}>
+        <CompareSalesContext.Provider
+            value={{ periods, addNewPeriod, deletePeriod, changePeriodType, changePeriod, deleteAllPeriods }}
+        >
             {children}
         </CompareSalesContext.Provider>
     );
