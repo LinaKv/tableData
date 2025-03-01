@@ -23,7 +23,7 @@ const PeriodSettings = ({ periodId, periodType }: PeriodSettingsProps) => {
     const { changePeriod } = useContext(CompareSalesContext) as CompareSalesContextType;
 
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-        const isFuture = current > dayjs().endOf('day');
+        const isFuture = current >= dayjs().startOf('day');
         return current && isFuture;
     };
 
@@ -39,7 +39,6 @@ const PeriodSettings = ({ periodId, periodType }: PeriodSettingsProps) => {
 
     return (
         <RangePicker
-            // @ts-expect-error
             picker={periodType}
             disabledDate={disabledDate}
             onChange={onRangeChange}

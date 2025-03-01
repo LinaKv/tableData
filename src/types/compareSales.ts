@@ -8,3 +8,11 @@ export type PeriodType = {
 };
 export type OptionType = { label: string; value: PeriodTypeEnum };
 export type PeriodDateType = Dayjs[] | null[];
+
+export type ComparedPeriods = {
+    responseData: any;
+    id: string;
+    dateFrom: Dayjs;
+    dateTo: Dayjs;
+    periodType: PeriodTypeEnum;
+};

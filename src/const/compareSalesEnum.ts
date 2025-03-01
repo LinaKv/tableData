@@ -1,7 +1,7 @@
 export enum PeriodTypeEnum {
     YEAR = 'year',
     MONTH = 'month',
-    DAYS = 'days',
+    DAYS = 'date',
     QUARTER = 'quarter',
     WEEK = 'week',
 }

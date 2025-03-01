@@ -5,12 +5,13 @@ import { CompareSalesContext, CompareSalesContextType } from '../../context/Comp
 import ComparePeriodForm from './SettingsBeforeComparePeriods/FormBeforeCompare/ComparePeriodForm';
 import { handlerResponseCompareSales } from './responseHandlerCompareSales';
 import ComparePeriod from './ComparePeriod/ComparePeriod';
+import { ComparedPeriods } from '../../types/compareSales';
 
 const token = process.env.REACT_APP_TOKEN;
 
 const CompareSalesForm = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [tableData, setTableData] = useState<any[]>([]);
+    const [comparedPeriods, setComparedPeriods] = useState<ComparedPeriods[]>([]);
     const { periods, addNewPeriod, deleteAllPeriods } = useContext(CompareSalesContext) as CompareSalesContextType;
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -19,7 +20,10 @@ const CompareSalesForm = () => {
 
         try {
             const periodsPromise = periods.map(async (period) => {
-                if (!period.period[0] || !period.period[1]) return;
+                if (!period.period[0] || !period.period[1]) {
+                    throw new Error(`Error! No Data`);
+                }
+
                 const dateFrom = period.period[0].format('YYYY-MM-DDTHH:mm:ss');
                 const dateTo = period.period[1].format('YYYY-MM-DDTHH:mm:ss');
 
@@ -57,7 +61,7 @@ const CompareSalesForm = () => {
                 const newRes = handlerResponseCompareSales(res?.responseData);
                 return { ...res, responseData: newRes };
             });
-            setTableData(tableData);
+            setComparedPeriods(tableData);
         } catch (error: any) {
             handlerError(error);
         } finally {
@@ -70,11 +74,11 @@ const CompareSalesForm = () => {
     };
 
     const deleteTablePeriod = (id: string) => {
-        setTableData((prev) => prev.filter((data) => data.id !== id));
+        setComparedPeriods((prev) => prev.filter((data) => data.id !== id));
     };
 
     const createNewPeriods = () => {
-        setTableData([]);
+        setComparedPeriods([]);
         deleteAllPeriods();
     };
 
@@ -90,15 +94,15 @@ const CompareSalesForm = () => {
     if (isLoading) {
         return (
             <Flex gap={24} vertical>
-                <Spin tip="Loading" size="large" />
+                <Spin size="large" />
             </Flex>
         );
     }
 
-    if (tableData.length) {
+    if (comparedPeriods.length) {
         return (
             <ComparePeriod
-                periods={tableData}
+                periods={comparedPeriods}
                 deleteTablePeriod={deleteTablePeriod}
                 createNewPeriods={createNewPeriods}
             />
