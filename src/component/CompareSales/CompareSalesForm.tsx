@@ -1,18 +1,21 @@
 import React, { useContext, useState } from 'react';
 import Title from 'antd/es/typography/Title';
 import { Button, Flex, Form, Spin, message } from 'antd';
-import { CompareSalesContext, CompareSalesContextType } from '../../context/CompareSalesContext';
+import { CompareSalesContext } from '../../context/CompareSalesContext';
 import ComparePeriodForm from './SettingsBeforeComparePeriods/FormBeforeCompare/ComparePeriodForm';
 import { handlerResponseCompareSales } from './responseHandlerCompareSales';
 import ComparePeriod from './ComparePeriod/ComparePeriod';
-import { ComparedPeriods } from '../../types/compareSales';
-
-const token = process.env.REACT_APP_TOKEN;
+import { CompareSalesContextType } from '../../types/compareSales';
+import { CompareSalesDispatchEnum } from '../../const/compareSalesEnum';
+import { getPeriodData } from './response';
 
 const CompareSalesForm = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [comparedPeriods, setComparedPeriods] = useState<ComparedPeriods[]>([]);
-    const { periods, addNewPeriod, deleteAllPeriods } = useContext(CompareSalesContext) as CompareSalesContextType;
+    const {
+        compareSalesState: { periods },
+        dispatch,
+    } = useContext(CompareSalesContext) as CompareSalesContextType;
+
     const [messageApi, contextHolder] = message.useMessage();
 
     const onFinish = async () => {
@@ -20,48 +23,17 @@ const CompareSalesForm = () => {
 
         try {
             const periodsPromise = periods.map(async (period) => {
-                if (!period.period[0] || !period.period[1]) {
-                    throw new Error(`Error! No Data`);
-                }
-
-                const dateFrom = period.period[0].format('YYYY-MM-DDTHH:mm:ss');
-                const dateTo = period.period[1].format('YYYY-MM-DDTHH:mm:ss');
-
-                const params = new URLSearchParams({
-                    dateFrom,
-                    dateTo,
-                });
-
-                const response = await fetch(
-                    `https://statistics-api.wildberries.ru/api/v5/supplier/reportDetailByPeriod?${params.toString()}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    },
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const responseData = await response.json();
-                return {
-                    responseData,
-                    id: period.id,
-                    dateFrom: period.period[0],
-                    dateTo: period.period[1],
-                    periodType: period.type,
-                };
+                const res = await getPeriodData(period);
+                return { id: period.id, updatedData: res.commonSalesData, articleFilter: res.supplierArticle };
             });
+
             const responses = await Promise.all(periodsPromise);
-            const tableData = responses.map((res) => {
-                const newRes = handlerResponseCompareSales(res?.responseData);
-                return { ...res, responseData: newRes };
+            responses.forEach((res) => {
+                dispatch({
+                    type: CompareSalesDispatchEnum.UPDATE_PERIODS_COMPARED_DATA,
+                    payload: res,
+                });
             });
-            setComparedPeriods(tableData);
         } catch (error: any) {
             handlerError(error);
         } finally {
@@ -70,16 +42,7 @@ const CompareSalesForm = () => {
     };
 
     const onAddPeriod = () => {
-        addNewPeriod();
-    };
-
-    const deleteTablePeriod = (id: string) => {
-        setComparedPeriods((prev) => prev.filter((data) => data.id !== id));
-    };
-
-    const createNewPeriods = () => {
-        setComparedPeriods([]);
-        deleteAllPeriods();
+        dispatch({ type: CompareSalesDispatchEnum.ADD_NEW_PERIOD });
     };
 
     const isCompareDisabled = periods.some((period) => !period.period[0]) || periods.length < 2;
@@ -99,14 +62,8 @@ const CompareSalesForm = () => {
         );
     }
 
-    if (comparedPeriods.length) {
-        return (
-            <ComparePeriod
-                periods={comparedPeriods}
-                deleteTablePeriod={deleteTablePeriod}
-                createNewPeriods={createNewPeriods}
-            />
-        );
+    if (periods[0]?.comparedData.length) {
+        return <ComparePeriod />;
     }
 
     return (

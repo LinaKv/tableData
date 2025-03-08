@@ -1,5 +1,7 @@
 import { PeriodTypeEnum } from '../const/compareSalesEnum';
 import { OperationEnum } from '../const/const';
+import { FilterType } from '../types/common';
+import { ArticleFilterType } from '../types/compareSales';
 
 export const toRub = (number: number) => {
     return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(number);
@@ -60,4 +62,15 @@ export const getPeriodTag = (type: string) => {
             return 'red';
             break;
     }
+};
+
+export const mergeUniqueFilters = (
+    existingFilters: ArticleFilterType[],
+    newFilters: ArticleFilterType[],
+): ArticleFilterType[] => {
+    const uniqueNewFilters = newFilters.filter(
+        (newItem) => !existingFilters.some((existingItem) => existingItem.value === newItem.value),
+    );
+
+    return [...existingFilters, ...uniqueNewFilters];
 };

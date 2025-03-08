@@ -1,38 +1,44 @@
-import { Collapse, CollapseProps, Table } from 'antd';
-import React from 'react';
-import { CommonSalesDataType } from '../../../types/sales';
+import { Collapse, CollapseProps } from 'antd';
+import React, { useContext } from 'react';
 import { DeleteOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { getPeriodTag } from '../../../helpers/helpers';
+import {
+    CommonCompareSalesDataType,
+    CompareCommonSalesDataType,
+    CompareSalesContextType,
+    CompareSalesExpandedData,
+    PeriodType,
+} from '../../../types/compareSales';
+import PeriodTable from './PeriodTable';
+import { CompareSalesContext } from '../../../context/CompareSalesContext';
+import { CompareSalesDispatchEnum } from '../../../const/compareSalesEnum';
 
 type PeriodProps = {
-    period: any;
-    columns?: ColumnsType<CommonSalesDataType>;
-    deleteTablePeriod: (id: string) => void;
+    period: PeriodType;
+    columns?: ColumnsType<CompareCommonSalesDataType>;
+    columnsArticleSum?: ColumnsType<CommonCompareSalesDataType>;
+    columnsArticle?: ColumnsType<CompareSalesExpandedData>;
 };
 
-const Period = ({ period, columns, deleteTablePeriod }: PeriodProps) => {
+const Period = ({ period, columns, columnsArticleSum, columnsArticle }: PeriodProps) => {
+    const { dispatch } = useContext(CompareSalesContext) as CompareSalesContextType;
+
     const onDelete = () => {
-        deleteTablePeriod(period.id);
-    };
-    const getPeriod = () => {
-        return (
-            <Table<CommonSalesDataType>
-                bordered
-                columns={columns}
-                dataSource={period.responseData.commonSalesData}
-                scroll={{ x: 'max-content' }}
-                pagination={false}
-                key={period.id}
-            />
-        );
+        dispatch({ type: CompareSalesDispatchEnum.DELETE_PERIOD, payload: { id: period.id } });
     };
 
     const items: CollapseProps['items'] = [
         {
             key: period.id,
-            label: `Период ${getPeriodTag(period.periodType)} ${period.dateFrom.format('DD/MM/YYYY')} - ${period.dateTo.format('DD/MM/YYYY')}`,
-            children: getPeriod(),
+            label: `Период ${getPeriodTag(period.type)} ${period.period[1]?.format('DD/MM/YYYY')} - ${period.period[1]?.format('DD/MM/YYYY')}`,
+            children: PeriodTable({
+                periodId: period.id,
+                comparedData: period.comparedData,
+                columns,
+                columnsArticleSum,
+                columnsArticle,
+            }),
             extra: <DeleteOutlined onClick={onDelete} />,
         },
     ];

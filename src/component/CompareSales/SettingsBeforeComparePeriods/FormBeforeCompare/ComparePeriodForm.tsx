@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { Card, Checkbox, Collapse, Flex } from 'antd';
-import { PeriodTypeEnum } from '../../../../const/compareSalesEnum';
-import { OptionType, PeriodType } from '../../../../types/compareSales';
+import { CompareSalesDispatchEnum, PeriodTypeEnum } from '../../../../const/compareSalesEnum';
+import { CompareSalesContextType, OptionType, PeriodType } from '../../../../types/compareSales';
 import { DeleteOutlined } from '@ant-design/icons';
-import { CompareSalesContext, CompareSalesContextType } from '../../../../context/CompareSalesContext';
+import { CompareSalesContext } from '../../../../context/CompareSalesContext';
 import type { CollapseProps } from 'antd';
 
 import PeriodSettings from './PeriodSettings';
@@ -15,7 +15,7 @@ type Props = {
 type ExpandIconPosition = 'start' | 'end';
 
 const ComparePeriodForm = ({ period }: Props) => {
-    const { changePeriodType, deletePeriod } = useContext(CompareSalesContext) as CompareSalesContextType;
+    const { dispatch } = useContext(CompareSalesContext) as CompareSalesContextType;
     const title =
         period.period[0] && period.period[1]
             ? `Период для сравнения: ${period.period[0].format('DD/MM/YYYY')}-${period.period[1].format('DD/MM/YYYY')}`
@@ -30,11 +30,14 @@ const ComparePeriodForm = ({ period }: Props) => {
     ];
 
     const onChange = (option: OptionType) => {
-        changePeriodType(period.id, option.value);
+        dispatch({
+            type: CompareSalesDispatchEnum.CHANGE_TYPE_PERIOD,
+            payload: { id: period.id, newType: option.value },
+        });
     };
 
     const onDelete = () => {
-        deletePeriod(period.id);
+        dispatch({ type: CompareSalesDispatchEnum.DELETE_PERIOD, payload: { id: period.id } });
     };
 
     const getCard = () => {

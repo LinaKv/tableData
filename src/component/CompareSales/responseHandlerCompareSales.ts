@@ -4,10 +4,12 @@ import isBetween from 'dayjs/plugin/isBetween';
 import { OperationEnum } from '../../const/const';
 import { DataArticleTableType } from '../ArticleTable/type';
 import { toNumber } from '../../helpers/helpers';
+import { CompareCommonSalesDataType, CompareSalesAccType } from '../../types/compareSales';
+import { FilterType } from '../../types/common';
 dayjs.extend(isBetween);
 
 export const handlerResponseCompareSales = (responseData: SalesItem[]) => {
-    const initialCommonSalesDataType: CommonSalesDataType = {
+    const initialCommonSalesDataType: CompareCommonSalesDataType = {
         costPrice: 0,
         deduction: 0,
         netSalesProfit: 0,
@@ -20,12 +22,13 @@ export const handlerResponseCompareSales = (responseData: SalesItem[]) => {
         acceptanceAndPenalty: 0,
         tax: 0,
         key: 0,
+        expandedData: [],
     };
 
     return responseData.reduce(
-        (acc: SalesAccType, responseItem, index) => {
+        (acc: CompareSalesAccType, responseItem, index) => {
             const sa_name = responseItem.sa_name;
-            const existingItem = acc.aggregatedData.find((item) => item.sa_name === sa_name);
+            const existingItem = acc.commonSalesData[0].expandedData.find((item) => item.sa_name === sa_name);
 
             if (existingItem) {
                 updateExistedAggregatedItem({
@@ -38,19 +41,19 @@ export const handlerResponseCompareSales = (responseData: SalesItem[]) => {
                     index,
                     responseItem,
                 });
-                acc.aggregatedData.push(newAggregatedItem);
+                acc.commonSalesData[0].expandedData.push(newAggregatedItem);
             }
 
-            const isArticleExist = acc.supplierArticle.find((item) => item.text === sa_name);
+            const isArticleExist = acc.supplierArticle.find((item) => item.label === sa_name);
             if (!isArticleExist) {
                 acc.supplierArticle.push({
-                    text: sa_name,
+                    label: sa_name,
                     value: sa_name,
                 });
             }
 
             // refactor this!
-            const sumArticlesData = acc.aggregatedData.reduce(
+            const sumArticlesData = acc.commonSalesData[0].expandedData.reduce(
                 (acc, cur) => {
                     const percent = cur.commission_percent / cur.amountSales;
                     acc.costPriceSum += cur.costPrice || 0;
@@ -88,7 +91,7 @@ export const handlerResponseCompareSales = (responseData: SalesItem[]) => {
 
             return acc;
         },
-        { aggregatedData: [], supplierArticle: [], commonSalesData: [initialCommonSalesDataType] },
+        { supplierArticle: [], commonSalesData: [initialCommonSalesDataType] },
     );
 };
 

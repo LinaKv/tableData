@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import { DatePicker, GetProps } from 'antd';
-import { MIN_DATE, PeriodTypeEnum } from '../../../../const/compareSalesEnum';
+import { CompareSalesDispatchEnum, MIN_DATE, PeriodTypeEnum } from '../../../../const/compareSalesEnum';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import dayjs, { Dayjs } from 'dayjs';
-import { CompareSalesContext, CompareSalesContextType } from '../../../../context/CompareSalesContext';
+import { CompareSalesContext } from '../../../../context/CompareSalesContext';
+import { CompareSalesContextType } from '../../../../types/compareSales';
 
 type PeriodSettingsProps = {
     periodId: string;
@@ -20,7 +21,7 @@ const PeriodSettings = ({ periodId, periodType }: PeriodSettingsProps) => {
     const today = dayjs();
     const minDate = dayjs(MIN_DATE);
 
-    const { changePeriod } = useContext(CompareSalesContext) as CompareSalesContextType;
+    const { dispatch } = useContext(CompareSalesContext) as CompareSalesContextType;
 
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
         const isFuture = current >= dayjs().startOf('day');
@@ -31,9 +32,15 @@ const PeriodSettings = ({ periodId, periodType }: PeriodSettingsProps) => {
         if (dates) {
             const startDate = dayjs(dates[0] || dateStrings[0]).startOf(periodType);
             const endDate = dayjs(dates[1] || dateStrings[1]).endOf(periodType);
-            changePeriod(periodId, [startDate, endDate]);
+            dispatch({
+                type: CompareSalesDispatchEnum.CHANGE_DATE_PERIOD,
+                payload: { id: periodId, newPeriod: [startDate, endDate] },
+            });
         } else {
-            changePeriod(periodId, [null, null]);
+            dispatch({
+                type: CompareSalesDispatchEnum.CHANGE_DATE_PERIOD,
+                payload: { id: periodId, newPeriod: [null, null] },
+            });
         }
     };
 

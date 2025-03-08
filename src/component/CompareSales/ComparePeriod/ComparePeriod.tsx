@@ -1,60 +1,71 @@
-import { Button, Checkbox, CheckboxOptionType, Collapse, CollapseProps, Flex, Table, Typography } from 'antd';
-import React, { useState } from 'react';
-import { commonSalesColumns } from '../../SalesTable/tableColumns';
-
+import { Flex, Typography } from 'antd';
+import React, { useContext, useState } from 'react';
 import Period from './Period';
+import { compareCommonSalesColumns, compareExpandedSalesColumns, compareSalesColumns } from '../tableColumns';
+import { CompareSalesContextType } from '../../../types/compareSales';
+import { CompareSalesContext } from '../../../context/CompareSalesContext';
+import ComparePeriodHeader from './ComparePeriodHeader';
 
-type ComparePeriodProps = {
-    periods: any[];
-    deleteTablePeriod: (id: string) => void;
-    createNewPeriods: () => void;
-};
+const defaultCheckedList = compareCommonSalesColumns?.map((item) => item.key);
+const defaultArticleSumList = compareSalesColumns?.map((item) => item.key);
+const defaultArticleList = compareExpandedSalesColumns?.map((item) => item.key);
 
-const defaultCheckedList = commonSalesColumns?.map((item) => item.key);
-
-const ComparePeriod = ({ periods, deleteTablePeriod, createNewPeriods }: ComparePeriodProps) => {
+const ComparePeriod = () => {
     const [checkedList, setCheckedList] = useState(defaultCheckedList);
+    const [checkedArticleSum, setCheckedArticleSum] = useState(defaultArticleSumList);
+    const [checkedArticle, setCheckedArticle] = useState(defaultArticleList);
 
-    const options = commonSalesColumns?.map(({ key, title }) => ({
-        label: title,
-        value: key,
-    }));
+    const {
+        compareSalesState: { periods },
+    } = useContext(CompareSalesContext) as CompareSalesContextType;
 
-    const newColumns = commonSalesColumns?.map((item) => ({
+    const onChangeCheckedList = (value: string[]) => {
+        setCheckedList(value);
+    };
+    const onChangeArticleSum = (value: string[]) => {
+        setCheckedArticleSum(value);
+    };
+    const onChangeArticle = (value: string[]) => {
+        setCheckedArticle(value);
+    };
+
+    const newColumns = compareCommonSalesColumns?.map((item) => ({
         ...item,
         hidden: !checkedList?.includes(item.key as string),
     }));
 
-    const onCreateNewPeriods = () => {
-        createNewPeriods();
-    };
+    const newColumnsArticleSum = compareSalesColumns?.map((item) => ({
+        ...item,
+        hidden: !checkedArticleSum?.includes(item.key as string),
+    }));
+
+    const newColumnsArticle = compareExpandedSalesColumns?.map((item) => ({
+        ...item,
+        hidden: !checkedArticle?.includes(item.key as string),
+    }));
 
     return (
         <Flex gap={32} vertical>
-            <Flex gap={10} vertical>
-                <Flex gap={10} justify="space-between">
-                    <Typography.Title level={3} style={{ margin: 0 }}>
-                        Колонки для отображения
-                    </Typography.Title>
-                    <Button type="primary" htmlType="button" onClick={onCreateNewPeriods}>
-                        Новые периоды
-                    </Button>
-                </Flex>
-                <Checkbox.Group
-                    value={checkedList}
-                    options={options as CheckboxOptionType[]}
-                    onChange={(value) => {
-                        setCheckedList(value as string[]);
-                    }}
-                />
-            </Flex>
+            <ComparePeriodHeader
+                checkedArticle={checkedArticle}
+                checkedArticleSum={checkedArticleSum}
+                checkedList={checkedList}
+                onChangeCheckedArticle={onChangeArticle}
+                onChangeCheckedArticleSum={onChangeArticleSum}
+                onChangeCheckedList={onChangeCheckedList}
+            />
+            <Typography.Title level={3} style={{ margin: 0 }}>
+                Периоды:
+            </Typography.Title>
+
             <Flex gap={10} vertical>
                 {periods.map((period) => (
                     <Period
                         period={period}
                         key={period.id}
                         columns={newColumns}
-                        deleteTablePeriod={deleteTablePeriod}
+                        columnsArticleSum={newColumnsArticleSum}
+                        columnsArticle={newColumnsArticle}
                     />
                 ))}
             </Flex>
