@@ -31,7 +31,7 @@ const Period = ({ period, columns, columnsArticleSum, columnsArticle }: PeriodPr
     const items: CollapseProps['items'] = [
         {
             key: period.id,
-            label: `Период ${getPeriodTag(period.type)} ${period.period[1]?.format('DD/MM/YYYY')} - ${period.period[1]?.format('DD/MM/YYYY')}`,
+            label: `Период ${getPeriodTag(period.type)} ${period.period[0]?.format('DD/MM/YYYY')} - ${period.period[1]?.format('DD/MM/YYYY')}`,
             children: PeriodTable({
                 periodId: period.id,
                 comparedData: period.comparedData,
