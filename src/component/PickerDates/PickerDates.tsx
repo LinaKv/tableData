@@ -28,9 +28,7 @@ const PickerDates = ({ startDate, endDate, onChangeDate }: PickerDatesProps) => 
             const startDate = dayjs(dates[0] || dateStrings[0]).startOf('day');
             const endDate = dayjs(dates[1] || dateStrings[1]).endOf('day');
             onChangeDate({ startDate, endDate });
-        } else {
-            console.log('Clear');
-        }
+        } 
     };
 
     return (
